@@ -1,0 +1,291 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* =========================================================================
+   Shut SEO — Editorial design system (ElevenLabs-inspired)
+   Off-white canvas · warm near-black ink · Fraunces Light display + Inter
+   Pastel gradient orbs are the only colour. See docs/design-system.md.
+   ========================================================================= */
+
+@theme static {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', 'Times New Roman', Georgia, serif;
+}
+
+:root {
+  /* Surfaces */
+  --canvas: #f5f5f5;
+  --canvas-soft: #fafafa;
+  --surface-card: #ffffff;
+  --surface-strong: #f0efed;
+
+  /* Ink & text */
+  --ink: #0c0a09;
+  --ink-primary: #292524;
+  --ink-primary-active: #0c0a09;
+  --body: #4e4e4e;
+  --muted: #777169;
+  --muted-soft: #a8a29e;
+  --on-primary: #ffffff;
+
+  /* Hairlines */
+  --hairline: #e7e5e4;
+  --hairline-soft: #f0efed;
+  --hairline-strong: #d6d3d1;
+
+  /* Atmospheric gradient orbs (the only colour in the system) */
+  --orb-mint: #a7e5d3;
+  --orb-peach: #f4c5a8;
+  --orb-lavender: #c8b8e0;
+  --orb-sky: #a8c8e8;
+  --orb-rose: #e8b8c4;
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-orb: 24px;
+
+  /* Soft single-tier elevation */
+  --shadow-soft: 0 4px 16px rgba(12, 10, 9, 0.05);
+  --shadow-float: 0 12px 40px rgba(12, 10, 9, 0.08);
+
+  color-scheme: light;
+}
+
+.dark {
+  --canvas: #0c0a09;
+  --canvas-soft: #141210;
+  --surface-card: #1c1917;
+  --surface-strong: #292524;
+
+  --ink: #fafaf9;
+  --ink-primary: #fafaf9;
+  --ink-primary-active: #ffffff;
+  --body: #d6d3d1;
+  --muted: #a8a29e;
+  --muted-soft: #78716c;
+  --on-primary: #0c0a09;
+
+  --hairline: #292524;
+  --hairline-soft: #1c1917;
+  --hairline-strong: #44403c;
+
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}
+
+/* ---- Base ---------------------------------------------------------------- */
+
+html,
+body {
+  background: var(--canvas);
+}
+
+body {
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+/* ---- Editorial display type --------------------------------------------- */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 144;
+}
+
+/* Homepage / auth hero */
+.display-1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 144;
+  font-size: clamp(2.75rem, 5vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.display-2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 120;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Page titles inside the app shell */
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 96;
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 72;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lede {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--body);
+  letter-spacing: 0.1px;
+}
+
+/* ---- Surfaces ------------------------------------------------------------ */
+
+.u-card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+}
+
+.u-card--hover {
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.u-card--hover:hover {
+  box-shadow: var(--shadow-soft);
+  border-color: var(--hairline-strong);
+  transform: translateY(-2px);
+}
+
+.hairline {
+  border-color: var(--hairline);
+}
+
+.surface-strong {
+  background: var(--surface-strong);
+}
+
+/* ---- Gradient orbs (atmosphere only — never a control) ------------------ */
+
+.orb-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.6;
+  will-change: transform;
+  animation: orb-drift 26s ease-in-out infinite alternate;
+}
+
+.dark .orb {
+  opacity: 0.28;
+}
+
+.orb--mint { background: radial-gradient(circle at 35% 35%, var(--orb-mint), transparent 68%); }
+.orb--peach { background: radial-gradient(circle at 35% 35%, var(--orb-peach), transparent 68%); }
+.orb--lavender { background: radial-gradient(circle at 35% 35%, var(--orb-lavender), transparent 68%); }
+.orb--sky { background: radial-gradient(circle at 35% 35%, var(--orb-sky), transparent 68%); }
+.orb--rose { background: radial-gradient(circle at 35% 35%, var(--orb-rose), transparent 68%); }
+
+@keyframes orb-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(2.5rem, -2rem, 0) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb { animation: none; }
+}
+
+/* ---- Pills / eyebrow badges --------------------------------------------- */
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---- Status chips (shared across pages) --------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.chip--published { background: color-mix(in srgb, var(--orb-mint) 42%, transparent); color: #0f5132; }
+.chip--scheduled { background: color-mix(in srgb, var(--orb-peach) 46%, transparent); color: #7c3a12; }
+.chip--draft { background: var(--surface-strong); color: var(--muted); }
+.dark .chip--published { color: #7fe6c4; }
+.dark .chip--scheduled { color: #f4c5a8; }
+
+/* Form section label */
+.field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+/* ---- Nuxt UI refinements ------------------------------------------------- */
+
+:root {
+  /* Slightly softer default component geometry (inputs, menus). */
+  --ui-radius: 0.5rem;
+}
+
+/* Thin, warm scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline-strong) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border-radius: 9999px;
+  border: 3px solid var(--canvas);
+}

@@ -169,6 +169,8 @@ export interface Channel {
   type: 'headless' | 'facebook' | 'linkedin'
   name: string
   status: string
+  /** Human-readable account name from the connected provider (M3). */
+  external_account_name?: string | null
 }
 
 export interface Publication {
@@ -178,6 +180,12 @@ export interface Publication {
   status: 'pending' | 'success' | 'failed' | 'revoked'
   published_at: string | null
   created_at: string
+  /** Delivery attempt count (M3). */
+  attempts?: number
+  /** Link to the published item on the external platform (M3). */
+  external_url?: string | null
+  /** Last delivery error message, if any (M3). */
+  error?: string | null
 }
 
 // ---- Post request payloads ----
@@ -306,4 +314,24 @@ export interface CreateWebhookResponse {
 
 export interface WebhookDeliveriesResponse {
   deliveries: WebhookDelivery[]
+}
+
+// ============================================================================
+// M3 — Social publishing
+// Source of truth: docs/api-contract-m3.md
+// ============================================================================
+
+/** Returned by POST /channels/complete and POST /channels/{id}/refresh. */
+export interface ChannelResponse {
+  channel: Channel
+}
+
+/** Returned by POST /channels/connect — redirect the user here to authorize. */
+export interface ConnectResponse {
+  authorization_url: string
+}
+
+/** Returned by GET/PUT /settings/public-host. */
+export interface PublicHostResponse {
+  public_base_url: string | null
 }

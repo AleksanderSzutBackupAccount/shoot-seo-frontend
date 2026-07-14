@@ -36,11 +36,12 @@ const socialChannels = computed(() =>
 )
 
 // Seed the current selection from existing publication rows for this post —
-// anything not explicitly revoked counts as an active target.
+// only `pending` rows are current targets; `success`/`failed` are delivery
+// history that SetPostChannelTargets leaves intact and doesn't reconcile.
 const selected = ref<string[]>([])
 watch(publications, (pubs) => {
   selected.value = (pubs ?? [])
-    .filter(p => p.post_id === props.postId && p.status !== 'revoked')
+    .filter(p => p.post_id === props.postId && p.status === 'pending')
     .map(p => p.channel_id)
 }, { immediate: true })
 
@@ -55,6 +56,8 @@ function channelIcon(channel: Channel): string {
 }
 
 async function toggle(channelId: string, checked: boolean) {
+  const previous = selected.value
+
   const next = new Set(selected.value)
   if (checked) next.add(channelId)
   else next.delete(channelId)
@@ -65,6 +68,7 @@ async function toggle(channelId: string, checked: boolean) {
     await setPostChannels(props.postId, selected.value)
   }
   catch (err) {
+    selected.value = previous
     toast.add({ title: parseApiError(err).message, color: 'error' })
   }
   finally {

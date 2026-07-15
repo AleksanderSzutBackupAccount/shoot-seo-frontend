@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Nowy workspace — Shut SEO' })
+useHead({ title: 'Nowy workspace — Shoot SEO' })
 
 const { create, workspaces } = useWorkspace()
 

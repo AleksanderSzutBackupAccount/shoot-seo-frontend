@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Weryfikacja e-mail — Shut SEO' })
+useHead({ title: 'Weryfikacja e-mail — Shoot SEO' })
 
 const { user, isEmailVerified, verifyEmail, resendVerification } = useAuth()
 const route = useRoute()

@@ -14,7 +14,7 @@ const { data: post, status, error } = await useAsyncData(
 )
 
 const title = computed(() => post.value?.title ?? 'Wpis')
-useHead({ title: () => `${title.value} — Shut SEO` })
+useHead({ title: () => `${title.value} — Shoot SEO` })
 </script>
 
 <template>

@@ -2,7 +2,7 @@
 import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import type { Channel, PostStatus, PostSummary, Publication } from '~~/shared/types/api'
 
-useHead({ title: 'Treści — Shut SEO' })
+useHead({ title: 'Treści — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { list, publish, unpublish, remove } = usePosts()

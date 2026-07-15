@@ -2,7 +2,7 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Webhook } from '~~/shared/types/api'
 
-useHead({ title: 'Webhooki — Shut SEO' })
+useHead({ title: 'Webhooki — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { list, remove } = useWebhooks()

@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 import type { Channel } from '~~/shared/types/api'
 
-useHead({ title: 'Kanały — Shut SEO' })
+useHead({ title: 'Kanały — Shoot SEO' })
 
 type SocialType = 'facebook' | 'linkedin'
 

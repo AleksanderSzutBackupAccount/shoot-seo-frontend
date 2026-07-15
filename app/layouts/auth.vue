@@ -14,7 +14,7 @@
         >
           <UIcon name="i-lucide-search-check" class="size-5" style="color: var(--on-primary)" />
         </span>
-        <span class="text-lg tracking-tight" style="color: var(--ink); font-weight: 600">Shut SEO</span>
+        <span class="text-lg tracking-tight" style="color: var(--ink); font-weight: 600">Shoot SEO</span>
       </div>
 
       <div class="relative z-10 max-w-lg">
@@ -43,7 +43,7 @@
         <span class="flex size-7 items-center justify-center rounded-lg" style="background: var(--ink)">
           <UIcon name="i-lucide-search-check" class="size-4" style="color: var(--on-primary)" />
         </span>
-        <span class="tracking-tight" style="color: var(--ink); font-weight: 600">Shut SEO</span>
+        <span class="tracking-tight" style="color: var(--ink); font-weight: 600">Shoot SEO</span>
       </div>
 
       <div class="w-full max-w-[26rem]">

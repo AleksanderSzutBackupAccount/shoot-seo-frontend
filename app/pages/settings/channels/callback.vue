@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Channel } from '~~/shared/types/api'
 
-useHead({ title: 'Łączenie kanału — Shut SEO' })
+useHead({ title: 'Łączenie kanału — Shoot SEO' })
 
 const route = useRoute()
 const toast = useToast()

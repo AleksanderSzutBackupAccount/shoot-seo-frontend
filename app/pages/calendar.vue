@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CalendarEntry, Channel, Publication } from '~~/shared/types/api'
 
-useHead({ title: 'Kalendarz — Shut SEO' })
+useHead({ title: 'Kalendarz — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { fetchCalendar } = usePosts()

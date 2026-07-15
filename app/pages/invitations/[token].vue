@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Zaproszenie — Shut SEO' })
+useHead({ title: 'Zaproszenie — Shoot SEO' })
 
 const route = useRoute()
 const token = route.params.token as string

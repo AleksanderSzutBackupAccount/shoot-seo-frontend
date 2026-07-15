@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Media } from '~~/shared/types/api'
 
-useHead({ title: 'Media — Shut SEO' })
+useHead({ title: 'Media — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { list, upload } = useMedia()

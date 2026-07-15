@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Nowy wpis — Shut SEO' })
+useHead({ title: 'Nowy wpis — Shoot SEO' })
 </script>
 
 <template>

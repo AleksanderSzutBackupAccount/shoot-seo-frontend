@@ -2,7 +2,7 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { ApiKey } from '~~/shared/types/api'
 
-useHead({ title: 'Klucze API — Shut SEO' })
+useHead({ title: 'Klucze API — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { list, revoke } = useApiKeys()

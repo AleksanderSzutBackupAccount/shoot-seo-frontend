@@ -1,6 +1,17 @@
 import type { Channel, ChannelResponse, ChannelsResponse, ConnectResponse } from '~~/shared/types/api'
 
 /**
+ * Display metadata (label + icon) for the social channel types a post can be
+ * distributed to. Single source of truth shared by DistributionPicker,
+ * PostCalendar, and the posts list — keep icons in sync with the ones
+ * DistributionPicker renders.
+ */
+export const SOCIAL_CHANNEL_META: Partial<Record<Channel['type'], { label: string, icon: string }>> = {
+  facebook: { label: 'Facebook', icon: 'i-lucide-facebook' },
+  linkedin: { label: 'LinkedIn', icon: 'i-lucide-linkedin' },
+}
+
+/**
  * Social publishing channels (M3). Every call goes through the tenant-scoped
  * BFF (`/api/channels*`), which forwards the current `X-Workspace-Id`.
  *

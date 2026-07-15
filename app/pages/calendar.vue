@@ -11,7 +11,7 @@ const { list: listChannels } = useChannels()
 const now = new Date()
 const month = ref(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`)
 
-const { data: entries, status } = await useAsyncData(
+const calendarQuery = useAsyncData(
   'calendar',
   () => fetchCalendar(month.value),
   { watch: [month, () => current.value?.id], default: () => [] as CalendarEntry[] },
@@ -19,16 +19,22 @@ const { data: entries, status } = await useAsyncData(
 
 // Per-channel distribution badges (M3) — the calendar feed itself has no
 // publication data, so we fetch it alongside and index client-side.
-const { data: publications } = await useAsyncData(
+const publicationsQuery = useAsyncData(
   'calendar-publications',
   () => listPublications(),
   { watch: [() => current.value?.id], default: () => [] as Publication[] },
 )
-const { data: channels } = await useAsyncData(
+const channelsQuery = useAsyncData(
   'calendar-channels',
   () => listChannels(),
   { watch: [() => current.value?.id], default: () => [] as Channel[] },
 )
+
+await Promise.all([calendarQuery, publicationsQuery, channelsQuery])
+
+const { data: entries, status } = calendarQuery
+const { data: publications } = publicationsQuery
+const { data: channels } = channelsQuery
 
 const channelsById = computed(() => {
   const map = new Map<string, Channel>()

@@ -18,12 +18,6 @@ const emit = defineEmits<{
   monthChange: [month: string]
 }>()
 
-/** Static labels for the social channel types a post can be distributed to. */
-const CHANNEL_LABELS: Partial<Record<Channel['type'], string>> = {
-  facebook: 'Facebook',
-  linkedin: 'LinkedIn',
-}
-
 function publicationsFor(postId: string): Publication[] {
   return props.publicationsByPost.get(postId) ?? []
 }
@@ -31,7 +25,7 @@ function publicationsFor(postId: string): Publication[] {
 function channelLabel(channelId: string): string {
   const channel = props.channelsById.get(channelId)
   if (!channel) return '—'
-  return CHANNEL_LABELS[channel.type] ?? channel.name
+  return SOCIAL_CHANNEL_META[channel.type]?.label ?? channel.name
 }
 
 const selected = ref<DateValue>()

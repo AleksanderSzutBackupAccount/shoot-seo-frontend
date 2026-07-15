@@ -10,12 +10,6 @@ const { list: listPublications } = usePublications()
 const { set: setPostChannels } = usePostChannels()
 const toast = useToast()
 
-/** Static labels for the social channel types a post can be distributed to. */
-const CHANNEL_LABELS: Partial<Record<Channel['type'], { label: string, icon: string }>> = {
-  facebook: { label: 'Facebook', icon: 'i-lucide-facebook' },
-  linkedin: { label: 'LinkedIn', icon: 'i-lucide-linkedin' },
-}
-
 const { data: channels, status: channelsStatus } = await useAsyncData(
   () => `distribution-channels-${props.postId}`,
   () => listChannels(),
@@ -48,11 +42,11 @@ watch(publications, (pubs) => {
 const saving = ref(false)
 
 function channelLabel(channel: Channel): string {
-  return CHANNEL_LABELS[channel.type]?.label ?? channel.name
+  return SOCIAL_CHANNEL_META[channel.type]?.label ?? channel.name
 }
 
 function channelIcon(channel: Channel): string {
-  return CHANNEL_LABELS[channel.type]?.icon ?? 'i-lucide-share-2'
+  return SOCIAL_CHANNEL_META[channel.type]?.icon ?? 'i-lucide-share-2'
 }
 
 async function toggle(channelId: string, checked: boolean) {

@@ -10,7 +10,7 @@ const { list: listPublications } = usePublications()
 const { list: listChannels } = useChannels()
 const toast = useToast()
 
-const { data: posts, status: loadStatus, refresh } = await useAsyncData(
+const postsQuery = useAsyncData(
   'posts',
   () => list(),
   { watch: [() => current.value?.id], default: () => [] as PostSummary[] },
@@ -18,22 +18,22 @@ const { data: posts, status: loadStatus, refresh } = await useAsyncData(
 
 // Per-channel distribution badges (M3) — best-effort: the posts list itself
 // doesn't carry publication data, so we fetch it alongside and index client-side.
-const { data: publications } = await useAsyncData(
+const publicationsQuery = useAsyncData(
   'posts-publications',
   () => listPublications(),
   { watch: [() => current.value?.id], default: () => [] as Publication[] },
 )
-const { data: channels } = await useAsyncData(
+const channelsQuery = useAsyncData(
   'posts-channels',
   () => listChannels(),
   { watch: [() => current.value?.id], default: () => [] as Channel[] },
 )
 
-/** Static labels for the social channel types a post can be distributed to. */
-const CHANNEL_LABELS: Partial<Record<Channel['type'], string>> = {
-  facebook: 'Facebook',
-  linkedin: 'LinkedIn',
-}
+await Promise.all([postsQuery, publicationsQuery, channelsQuery])
+
+const { data: posts, status: loadStatus, refresh } = postsQuery
+const { data: publications } = publicationsQuery
+const { data: channels } = channelsQuery
 
 const channelsById = computed(() => {
   const map = new Map<string, Channel>()
@@ -58,7 +58,7 @@ function publicationsFor(postId: string): Publication[] {
 function channelLabel(channelId: string): string {
   const channel = channelsById.value.get(channelId)
   if (!channel) return '—'
-  return CHANNEL_LABELS[channel.type] ?? channel.name
+  return SOCIAL_CHANNEL_META[channel.type]?.label ?? channel.name
 }
 
 const statusMeta: Record<PostStatus, { label: string, cls: string }> = {

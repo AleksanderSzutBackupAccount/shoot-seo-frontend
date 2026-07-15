@@ -335,3 +335,36 @@ export interface ConnectResponse {
 export interface PublicHostResponse {
   public_base_url: string | null
 }
+
+// ============================================================================
+// M4 — AI content engine
+// Source of truth: docs/api-contract-m4.md
+// ============================================================================
+
+export interface AiUsageTokens {
+  tokens_in: number
+  tokens_out: number
+  cost_estimate: number
+}
+
+export interface AiResult {
+  text: string
+  usage: AiUsageTokens
+}
+
+export interface AiAnalysis {
+  analysis: {
+    readability: { score: number }
+    seo: { issues: string[] }
+    gaps: string[]
+  }
+  usage: AiUsageTokens
+}
+
+export interface AiUsage {
+  period: string
+  tokens_used: number
+  tokens_limit: number
+  remaining: number
+  words_est: number
+}

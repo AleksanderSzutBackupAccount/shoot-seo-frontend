@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { CreatePostPayload, Post, PostStatus, Seo } from '~~/shared/types/api'
+import type { AiAnalysis, CreatePostPayload, Post, PostStatus, Seo } from '~~/shared/types/api'
 
 const props = withDefaults(defineProps<{
   mode: 'create' | 'edit'
@@ -59,6 +59,9 @@ const slugEdited = ref(false)
 
 const showScheduleModal = ref(false)
 const scheduleAt = ref(toDatetimeLocal(new Date(Date.now() + 60 * 60 * 1000)))
+
+// ---- AI content engine (M4) ----
+const aiAnalysis = ref<AiAnalysis | null>(null)
 
 const isCreate = computed(() => props.mode === 'create')
 
@@ -263,6 +266,15 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
         <section class="u-card p-6 sm:p-7">
           <h2 class="card-title" style="font-size: 1.25rem">Treść</h2>
           <p class="mt-1 text-sm" style="color: var(--muted)">Główna treść wpisu z formatowaniem i obrazami.</p>
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <AiActions
+              :content="form.content ?? ''"
+              @insert="(t) => { form.content = (form.content ?? '') + '\n\n' + t }"
+              @replace="(t) => { form.content = t }"
+              @analysis="(a) => { aiAnalysis = a }"
+            />
+            <AiUsageMeter />
+          </div>
           <UFormField name="content" class="mt-5">
             <ClientOnly>
               <Wysiwyg v-model="form.content" />
@@ -274,6 +286,28 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
               </template>
             </ClientOnly>
           </UFormField>
+        </section>
+
+        <section v-if="aiAnalysis" class="u-card p-6 sm:p-7">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-sparkles" class="size-4" style="color: var(--muted)" />
+            <h2 class="card-title" style="font-size: 1.25rem">Analiza AI</h2>
+          </div>
+          <p class="mt-1 text-sm" style="color: var(--muted)">Czytelność: {{ aiAnalysis.analysis.readability.score }}/100</p>
+          <div class="mt-4 space-y-4">
+            <div v-if="aiAnalysis.analysis.seo.issues.length">
+              <p class="field-label mb-1.5">Problemy SEO</p>
+              <ul class="list-inside list-disc space-y-1 text-sm" style="color: var(--body)">
+                <li v-for="issue in aiAnalysis.analysis.seo.issues" :key="issue">{{ issue }}</li>
+              </ul>
+            </div>
+            <div v-if="aiAnalysis.analysis.gaps.length">
+              <p class="field-label mb-1.5">Luki treściowe</p>
+              <ul class="list-inside list-disc space-y-1 text-sm" style="color: var(--body)">
+                <li v-for="gap in aiAnalysis.analysis.gaps" :key="gap">{{ gap }}</li>
+              </ul>
+            </div>
+          </div>
         </section>
 
         <section class="u-card p-6 sm:p-7">

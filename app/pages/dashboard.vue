@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Pulpit — Shut SEO' })
+useHead({ title: 'Pulpit — Shoot SEO' })
 
 const { user } = useAuth()
 const { current } = useWorkspace()

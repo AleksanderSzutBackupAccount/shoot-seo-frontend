@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
-import type { PostStatus, PostSummary } from '~~/shared/types/api'
+import type { Channel, PostStatus, PostSummary, Publication } from '~~/shared/types/api'
 
-useHead({ title: 'Treści — Shut SEO' })
+useHead({ title: 'Treści — Shoot SEO' })
 
 const { current } = useWorkspace()
 const { list, publish, unpublish, remove } = usePosts()
+const { list: listPublications } = usePublications()
+const { list: listChannels } = useChannels()
 const toast = useToast()
 
 const { data: posts, status: loadStatus, refresh } = await useAsyncData(
@@ -13,6 +15,51 @@ const { data: posts, status: loadStatus, refresh } = await useAsyncData(
   () => list(),
   { watch: [() => current.value?.id], default: () => [] as PostSummary[] },
 )
+
+// Per-channel distribution badges (M3) — best-effort: the posts list itself
+// doesn't carry publication data, so we fetch it alongside and index client-side.
+const { data: publications } = await useAsyncData(
+  'posts-publications',
+  () => listPublications(),
+  { watch: [() => current.value?.id], default: () => [] as Publication[] },
+)
+const { data: channels } = await useAsyncData(
+  'posts-channels',
+  () => listChannels(),
+  { watch: [() => current.value?.id], default: () => [] as Channel[] },
+)
+
+/** Static labels for the social channel types a post can be distributed to. */
+const CHANNEL_LABELS: Partial<Record<Channel['type'], string>> = {
+  facebook: 'Facebook',
+  linkedin: 'LinkedIn',
+}
+
+const channelsById = computed(() => {
+  const map = new Map<string, Channel>()
+  for (const channel of channels.value ?? []) map.set(channel.id, channel)
+  return map
+})
+
+const publicationsByPost = computed(() => {
+  const map = new Map<string, Publication[]>()
+  for (const pub of publications.value ?? []) {
+    const bucket = map.get(pub.post_id)
+    if (bucket) bucket.push(pub)
+    else map.set(pub.post_id, [pub])
+  }
+  return map
+})
+
+function publicationsFor(postId: string): Publication[] {
+  return publicationsByPost.value.get(postId) ?? []
+}
+
+function channelLabel(channelId: string): string {
+  const channel = channelsById.value.get(channelId)
+  if (!channel) return '—'
+  return CHANNEL_LABELS[channel.type] ?? channel.name
+}
 
 const statusMeta: Record<PostStatus, { label: string, cls: string }> = {
   draft: { label: 'Szkic', cls: 'chip--draft' },
@@ -25,6 +72,7 @@ const columns: TableColumn<PostSummary>[] = [
   { accessorKey: 'status', header: 'Status' },
   { id: 'date', header: 'Data' },
   { accessorKey: 'updated_at', header: 'Aktualizacja' },
+  { id: 'channels', header: 'Kanały' },
   { id: 'actions', header: '' },
 ]
 
@@ -165,6 +213,20 @@ async function confirmRemove() {
 
         <template #updated_at-cell="{ row }">
           <span class="text-sm" style="color: var(--muted)">{{ formatDate(row.original.updated_at) }}</span>
+        </template>
+
+        <template #channels-cell="{ row }">
+          <div v-if="publicationsFor(row.original.id).length" class="flex flex-wrap gap-1.5">
+            <UBadge
+              v-for="pub in publicationsFor(row.original.id)"
+              :key="pub.id"
+              :label="channelLabel(pub.channel_id)"
+              :color="publicationStatusMeta[pub.status].color"
+              variant="subtle"
+              size="sm"
+            />
+          </div>
+          <span v-else class="text-sm" style="color: var(--muted-soft)">—</span>
         </template>
 
         <template #actions-cell="{ row }">

@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Reset hasła — Shut SEO' })
+useHead({ title: 'Reset hasła — Shoot SEO' })
 
 const { forgotPassword } = useAuth()
 

@@ -368,6 +368,12 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
           </div>
         </section>
 
+        <PostDistributionPicker v-if="!isCreate" :post-id="(props.id as string)" />
+        <section v-else class="u-card p-6">
+          <h2 class="card-title" style="font-size: 1.25rem">Dystrybucja</h2>
+          <p class="mt-1 text-sm" style="color: var(--muted)">Zapisz post, aby wybrać kanały dystrybucji.</p>
+        </section>
+
         <section class="u-card p-6">
           <h2 class="card-title" style="font-size: 1.25rem">Obraz główny</h2>
           <p class="mt-1 text-sm" style="color: var(--muted)">Wyświetlany na liście wpisów i w nagłówku.</p>

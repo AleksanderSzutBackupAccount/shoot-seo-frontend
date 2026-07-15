@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Logowanie — Shut SEO' })
+useHead({ title: 'Logowanie — Shoot SEO' })
 
 const { login } = useAuth()
 const route = useRoute()
@@ -43,7 +43,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <div class="mb-8">
       <p class="eyebrow mb-3">Logowanie</p>
       <h1 class="card-title">Zaloguj się</h1>
-      <p class="mt-2 text-[15px]" style="color: var(--muted)">Wejdź do panelu Shut SEO</p>
+      <p class="mt-2 text-[15px]" style="color: var(--muted)">Wejdź do panelu Shoot SEO</p>
     </div>
 
     <UAlert

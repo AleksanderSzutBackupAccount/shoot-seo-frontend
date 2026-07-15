@@ -2,7 +2,7 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Member, Role } from '~~/shared/types/api'
 
-useHead({ title: 'Członkowie — Shut SEO' })
+useHead({ title: 'Członkowie — Shoot SEO' })
 
 const { user } = useAuth()
 const { current, isAdmin, fetchMembers, changeMemberRole, removeMember } = useWorkspace()

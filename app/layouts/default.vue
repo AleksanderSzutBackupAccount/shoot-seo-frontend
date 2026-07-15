@@ -22,7 +22,7 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
         <span class="flex size-8 items-center justify-center rounded-lg" style="background: var(--ink)">
           <UIcon name="i-lucide-search-check" class="size-5" style="color: var(--on-primary)" />
         </span>
-        <span class="tracking-tight" style="color: var(--ink); font-weight: 600">Shut SEO</span>
+        <span class="tracking-tight" style="color: var(--ink); font-weight: 600">Shoot SEO</span>
       </div>
 
       <div class="flex-1 overflow-y-auto px-4 py-6">
@@ -86,7 +86,7 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
     </div>
 
     <!-- Mobile nav -->
-    <USlideover v-model:open="mobileNav" side="left" title="Shut SEO">
+    <USlideover v-model:open="mobileNav" side="left" title="Shoot SEO">
       <template #body>
         <AppSidebarNav @navigate="mobileNav = false" />
       </template>

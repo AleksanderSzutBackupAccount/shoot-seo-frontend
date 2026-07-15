@@ -1,15 +1,38 @@
 <script setup lang="ts">
 import type { DateValue } from '@internationalized/date'
-import type { CalendarEntry, PostStatus } from '~~/shared/types/api'
+import type { CalendarEntry, Channel, PostStatus, Publication } from '~~/shared/types/api'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   posts: CalendarEntry[]
   loading?: boolean
-}>()
+  /** Publication (per-channel delivery) rows for the visible posts, keyed by post id (M3). */
+  publicationsByPost?: Map<string, Publication[]>
+  /** Channel metadata for the publications above, keyed by channel id (M3). */
+  channelsById?: Map<string, Channel>
+}>(), {
+  publicationsByPost: () => new Map(),
+  channelsById: () => new Map(),
+})
 
 const emit = defineEmits<{
   monthChange: [month: string]
 }>()
+
+/** Static labels for the social channel types a post can be distributed to. */
+const CHANNEL_LABELS: Partial<Record<Channel['type'], string>> = {
+  facebook: 'Facebook',
+  linkedin: 'LinkedIn',
+}
+
+function publicationsFor(postId: string): Publication[] {
+  return props.publicationsByPost.get(postId) ?? []
+}
+
+function channelLabel(channelId: string): string {
+  const channel = props.channelsById.get(channelId)
+  if (!channel) return '—'
+  return CHANNEL_LABELS[channel.type] ?? channel.name
+}
 
 const selected = ref<DateValue>()
 
@@ -123,7 +146,19 @@ function formatSelected(date: DateValue): string {
                 :to="`/posts/${post.id}`"
                 class="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--surface-strong)]"
               >
-                <span class="min-w-0 flex-1 truncate text-[15px]" style="color: var(--ink); font-weight: 500">{{ post.title }}</span>
+                <div class="min-w-0 flex-1">
+                  <span class="block truncate text-[15px]" style="color: var(--ink); font-weight: 500">{{ post.title }}</span>
+                  <div v-if="publicationsFor(post.id).length" class="mt-1 flex flex-wrap gap-1">
+                    <UBadge
+                      v-for="pub in publicationsFor(post.id)"
+                      :key="pub.id"
+                      :label="channelLabel(pub.channel_id)"
+                      :color="publicationStatusMeta[pub.status].color"
+                      variant="subtle"
+                      size="sm"
+                    />
+                  </div>
+                </div>
                 <span class="chip shrink-0" :class="statusMeta[post.status].chip">{{ statusMeta[post.status].label }}</span>
               </NuxtLink>
             </li>

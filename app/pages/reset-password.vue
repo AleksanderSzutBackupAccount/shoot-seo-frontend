@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Ustaw nowe hasło — Shut SEO' })
+useHead({ title: 'Ustaw nowe hasło — Shoot SEO' })
 
 const { resetPassword } = useAuth()
 const route = useRoute()

@@ -107,7 +107,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         <UForm ref="form" :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
           <UFormField label="Adres URL" name="url" help="Punkt końcowy, który odbierze zdarzenia.">
-            <UInput v-model="state.url" type="url" placeholder="https://twoja-strona.pl/webhooks/shut-seo" icon="i-lucide-link" size="lg" class="w-full" />
+            <UInput v-model="state.url" type="url" placeholder="https://twoja-strona.pl/webhooks/shoot-seo" icon="i-lucide-link" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField label="Zdarzenia" name="events" :error="eventsError ?? undefined">

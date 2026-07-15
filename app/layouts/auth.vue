@@ -8,12 +8,7 @@
       <AppGradientOrbs variant="hero" />
 
       <div class="relative z-10 flex items-center gap-2.5">
-        <span
-          class="flex size-8 items-center justify-center rounded-lg"
-          style="background: var(--ink)"
-        >
-          <UIcon name="i-lucide-search-check" class="size-5" style="color: var(--on-primary)" />
-        </span>
+        <img src="/logo.png" alt="" class="size-8 shrink-0 object-contain">
         <span class="text-lg tracking-tight" style="color: var(--ink); font-weight: 600">Shoot SEO</span>
       </div>
 
@@ -40,9 +35,7 @@
     <!-- Form column -->
     <main class="relative flex flex-col items-center justify-center p-6 sm:p-10" style="background: var(--canvas)">
       <div class="mb-8 flex items-center gap-2 lg:hidden">
-        <span class="flex size-7 items-center justify-center rounded-lg" style="background: var(--ink)">
-          <UIcon name="i-lucide-search-check" class="size-4" style="color: var(--on-primary)" />
-        </span>
+        <img src="/logo.png" alt="" class="size-7 shrink-0 object-contain">
         <span class="tracking-tight" style="color: var(--ink); font-weight: 600">Shoot SEO</span>
       </div>
 

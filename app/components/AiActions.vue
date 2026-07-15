@@ -5,7 +5,7 @@ import type { AiAnalysis } from '~~/shared/types/api'
 // current content, or run a readability/SEO analysis. Emits the result back to
 // the parent instead of writing into the post form directly.
 const props = defineProps<{ content: string }>()
-const emit = defineEmits<{ insert: [text: string], analysis: [payload: AiAnalysis] }>()
+const emit = defineEmits<{ insert: [text: string], replace: [text: string], analysis: [payload: AiAnalysis] }>()
 
 const { generate, improve, analyze } = useAi()
 const toast = useToast()
@@ -34,7 +34,7 @@ const topic = ref('')
     <UButton size="sm" :loading="busy" @click="run(() => generate({ variant: 'draft', topic }), r => emit('insert', r.text))">
       Generuj draft
     </UButton>
-    <UButton size="sm" variant="soft" :loading="busy" :disabled="!props.content" @click="run(() => improve({ fragment: props.content, instruction: 'zwięźlej' }), r => emit('insert', r.text))">
+    <UButton size="sm" variant="soft" :loading="busy" :disabled="!props.content" @click="run(() => improve({ fragment: props.content, instruction: 'zwięźlej' }), r => emit('replace', r.text))">
       Popraw
     </UButton>
     <UButton size="sm" variant="soft" :loading="busy" :disabled="!props.content" @click="run(() => analyze({ content: props.content }), r => emit('analysis', r))">

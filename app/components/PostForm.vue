@@ -270,6 +270,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
             <AiActions
               :content="form.content ?? ''"
               @insert="(t) => { form.content = (form.content ?? '') + '\n\n' + t }"
+              @replace="(t) => { form.content = t }"
               @analysis="(a) => { aiAnalysis = a }"
             />
             <AiUsageMeter />

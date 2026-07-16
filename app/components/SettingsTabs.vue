@@ -5,6 +5,7 @@ const tabs = [
   { label: 'Klucze API', icon: 'i-lucide-key-round', to: '/settings/api-keys' },
   { label: 'Webhooki', icon: 'i-lucide-webhook', to: '/settings/webhooks' },
   { label: 'Kanały', icon: 'i-lucide-share-2', to: '/settings/channels' },
+  { label: 'Plan i płatności', icon: 'i-lucide-credit-card', to: '/settings/billing' },
 ]
 
 function isActive(to: string) {

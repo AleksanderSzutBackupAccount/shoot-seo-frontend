@@ -368,3 +368,42 @@ export interface AiUsage {
   remaining: number
   words_est: number
 }
+
+// ============================================================================
+// M5 — Billing (plans, subscriptions, entitlements)
+// Source of truth: docs/api-contract-m5.md
+// ============================================================================
+
+/** Flat dotted entitlement keys, as returned by the API. */
+export interface PlanEntitlements {
+  'ai.token_limit': number
+  'autonomous.enabled': boolean
+}
+
+export interface Plan {
+  code: string
+  name: string
+  price_cents: number
+  currency: string
+  purchasable: boolean
+  entitlements: PlanEntitlements
+}
+
+export interface CurrentPlan {
+  code: string
+  name: string
+  price_cents: number
+  currency: string
+  status: string
+  current_period_end: string | null
+  entitlements: PlanEntitlements
+}
+
+export interface PlansResponse {
+  plans: Plan[]
+}
+
+/** Returned by POST /billing/checkout and POST /billing/portal — redirect the user here. */
+export interface BillingUrl {
+  url: string
+}

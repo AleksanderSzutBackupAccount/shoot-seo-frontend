@@ -407,3 +407,50 @@ export interface PlansResponse {
 export interface BillingUrl {
   url: string
 }
+
+// ============================================================================
+// M6 — Analytics (views / uniques / engagement)
+// Source of truth: docs/api-contract-m6.md
+// ============================================================================
+
+/** Inclusive `from`/`to` window as `YYYY-MM-DD`. Omit both → backend defaults to last 28 days. */
+export interface AnalyticsDateRange {
+  from: string
+  to: string
+}
+
+/** One day of the daily time series. */
+export interface AnalyticsSeriesPoint {
+  date: string // YYYY-MM-DD
+  views: number
+  uniques: number
+  avg_engagement_ms: number
+}
+
+/** Aggregate totals + daily series. Same shape for the workspace overview and a single post. */
+export interface AnalyticsOverview {
+  views: number
+  uniques: number
+  avg_engagement_ms: number
+  series: AnalyticsSeriesPoint[]
+}
+
+/** A row of the "top posts" table (ordered by views desc). */
+export interface AnalyticsPostRow {
+  post_id: string
+  slug: string
+  title: string
+  views: number
+  uniques: number
+  avg_engagement_ms: number
+}
+
+// ---- M6 response envelopes (`{ data: ... }`) ----
+
+export interface AnalyticsOverviewResponse {
+  data: AnalyticsOverview
+}
+
+export interface AnalyticsPostsResponse {
+  data: AnalyticsPostRow[]
+}

@@ -454,3 +454,85 @@ export interface AnalyticsOverviewResponse {
 export interface AnalyticsPostsResponse {
   data: AnalyticsPostRow[]
 }
+
+// ============================================================================
+// M7 — Autonomous content (sites, briefs, plans, proposals)
+// Source of truth: docs/api-contract-m7.md
+// ============================================================================
+
+export type AutonomousSiteStatus = 'pending' | 'crawling' | 'ready' | 'failed'
+export type AutonomousPlanStatus = 'active' | 'paused'
+export type AutonomousFrequency = 'daily' | 'weekly'
+
+/** A crawled site the autonomous engine can generate content for. */
+export interface AutonomousSite {
+  id: string
+  url: string
+  status: AutonomousSiteStatus
+  last_crawled_at: string | null
+}
+
+/** Editorial brief distilled from a crawl (also returned by the brief endpoint). */
+export interface AutonomousBrief {
+  summary: string
+  keywords: string[]
+  tone: string
+}
+
+/** A recurring content plan bound to a ready site. */
+export interface AutonomousPlan {
+  id: string
+  site_id: string
+  status: AutonomousPlanStatus
+  topic_source: string
+  tone: string
+  frequency: AutonomousFrequency
+  next_run_at: string | null
+  run_count: number
+}
+
+/** A generated draft proposal — links to the post editor at `/posts/{post_id}`. */
+export interface AutonomousProposal {
+  post_id: string
+  topic: string
+  status: string
+  created_at: string
+}
+
+// ---- M7 request payloads ----
+
+export interface CreateAutonomousPlanPayload {
+  site_id: string
+  frequency: AutonomousFrequency
+  tone?: string
+  topic_source?: string
+}
+
+// ---- M7 response envelopes ----
+
+export interface AutonomousSitesResponse {
+  data: AutonomousSite[]
+}
+
+/** `null` until the site has been crawled. */
+export interface AutonomousBriefResponse {
+  data: AutonomousBrief | null
+}
+
+export interface AutonomousPlansResponse {
+  data: AutonomousPlan[]
+}
+
+export interface AutonomousProposalsResponse {
+  data: AutonomousProposal[]
+}
+
+/** POST create endpoints (site / plan) return only the new id (201). */
+export interface AutonomousCreatedResponse {
+  id: string
+}
+
+/** PATCH /plans/{id} echoes the new status. */
+export interface AutonomousPlanStatusResponse {
+  status: AutonomousPlanStatus
+}

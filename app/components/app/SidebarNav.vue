@@ -10,6 +10,7 @@ const groups = [
       { label: 'Treści', icon: 'i-lucide-file-text', to: '/posts' },
       { label: 'Kalendarz', icon: 'i-lucide-calendar-days', to: '/calendar' },
       { label: 'Media', icon: 'i-lucide-image', to: '/media' },
+      { label: 'Analityka', icon: 'i-lucide-chart-line', to: '/analytics' },
     ],
   },
   { label: 'Zespół', items: [{ label: 'Członkowie', icon: 'i-lucide-users', to: '/members' }] },

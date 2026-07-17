@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shoot-seo-frontend
+  labels: { app.kubernetes.io/name: shoot-seo-frontend }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app.kubernetes.io/name: shoot-seo-frontend }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: shoot-seo-frontend }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: frontend
+          image: frontend
+          ports:
+            - { name: http, containerPort: 3000 }
+          env:
+            # In-cluster URL of the API service the Nuxt BFF proxies to.
+            - name: NUXT_API_BASE
+              value: "http://shoot-seo-api.shoot-seo.svc.cluster.local/api"
+          readinessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests: { cpu: "100m", memory: "192Mi" }
+            limits: { cpu: "500m", memory: "512Mi" }

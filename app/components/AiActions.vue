@@ -9,10 +9,13 @@ const emit = defineEmits<{ insert: [text: string], replace: [text: string], anal
 
 const { generate, improve, analyze } = useAi()
 const toast = useToast()
-const busy = ref(false)
 
-async function run<T>(fn: () => Promise<T>, onOk: (r: T) => void) {
-  busy.value = true
+type AiAction = 'generate' | 'improve' | 'analyze'
+// Track which action is running so only its button spins (and no two run at once).
+const busy = ref<AiAction | null>(null)
+
+async function run<T>(action: AiAction, fn: () => Promise<T>, onOk: (r: T) => void) {
+  busy.value = action
   try {
     onOk(await fn())
   }
@@ -21,23 +24,41 @@ async function run<T>(fn: () => Promise<T>, onOk: (r: T) => void) {
     toast.add({ title: status === 429 ? 'Wyczerpano limit AI dla tego okresu.' : 'Akcja AI nie powiodła się.', color: 'error' })
   }
   finally {
-    busy.value = false
+    busy.value = null
   }
 }
 
 const topic = ref('')
+const anyBusy = computed(() => busy.value !== null)
 </script>
 
 <template>
   <div class="flex flex-wrap items-center gap-2">
     <UInput v-model="topic" placeholder="Temat draftu…" size="sm" class="w-48" />
-    <UButton size="sm" :loading="busy" @click="run(() => generate({ variant: 'draft', topic }), r => emit('insert', r.text))">
+    <UButton
+      size="sm"
+      :loading="busy === 'generate'"
+      :disabled="anyBusy || !topic.trim()"
+      @click="run('generate', () => generate({ variant: 'draft', topic }), r => emit('insert', r.text))"
+    >
       Generuj draft
     </UButton>
-    <UButton size="sm" variant="soft" :loading="busy" :disabled="!props.content" @click="run(() => improve({ fragment: props.content, instruction: 'zwięźlej' }), r => emit('replace', r.text))">
+    <UButton
+      size="sm"
+      variant="soft"
+      :loading="busy === 'improve'"
+      :disabled="anyBusy || !props.content"
+      @click="run('improve', () => improve({ fragment: props.content, instruction: 'zwięźlej' }), r => emit('replace', r.text))"
+    >
       Popraw
     </UButton>
-    <UButton size="sm" variant="soft" :loading="busy" :disabled="!props.content" @click="run(() => analyze({ content: props.content }), r => emit('analysis', r))">
+    <UButton
+      size="sm"
+      variant="soft"
+      :loading="busy === 'analyze'"
+      :disabled="anyBusy || !props.content"
+      @click="run('analyze', () => analyze({ content: props.content }), r => emit('analysis', r))"
+    >
       Analiza
     </UButton>
   </div>

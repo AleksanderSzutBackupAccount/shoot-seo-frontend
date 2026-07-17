@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: shoot-seo
+
+resources:
+  - ../../base
+
+images:
+  - name: frontend
+    newName: europe-central2-docker.pkg.dev/PROJECT_ID/shoot-seo/frontend
+    newTag: latest
+
+# Single replica (no HA).
+patches:
+  - target: { kind: Deployment, name: shoot-seo-frontend }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target: { kind: HorizontalPodAutoscaler, name: shoot-seo-frontend }
+    patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 1

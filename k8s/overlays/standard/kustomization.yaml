@@ -4,15 +4,9 @@ kind: Kustomization
 namespace: shoot-seo
 
 resources:
-  - deployment.yaml
-  - service.yaml
-  - hpa.yaml
+  - ../../base
 
-# CD rewrites via: kustomize edit set image frontend=$REGISTRY/frontend:$SHA
 images:
   - name: frontend
     newName: europe-central2-docker.pkg.dev/PROJECT_ID/shoot-seo/frontend
     newTag: latest
-
-commonLabels:
-  app.kubernetes.io/part-of: shoot-seo

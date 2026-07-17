@@ -49,7 +49,8 @@ jobs:
       - name: Roll out
         run: |
           SHA="${GITHUB_SHA::12}"
-          cd k8s
-          kustomize edit set image frontend="$IMAGE_BASE/frontend:$SHA"
-          kubectl apply -k .
+          PROFILE="${{ vars.DEPLOY_PROFILE || 'budget' }}"
+          kubectl kustomize "k8s/overlays/$PROFILE" \
+            | sed "s|PROJECT_ID|${{ vars.GCP_PROJECT_ID }}|g; s|/frontend:latest|/frontend:$SHA|g" \
+            | kubectl apply -f -
           kubectl -n shoot-seo rollout status deploy/shoot-seo-frontend --timeout=180s

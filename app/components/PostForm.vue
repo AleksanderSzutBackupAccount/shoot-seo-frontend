@@ -23,6 +23,7 @@ const schema = z.object({
   excerpt: z.string().optional(),
   content: z.string().optional(),
   main_image_url: z.string().nullable().optional(),
+  language: z.string().optional(),
   seo: z.object({
     meta_title: z.string().optional(),
     meta_description: z.string().optional(),
@@ -33,12 +34,25 @@ const schema = z.object({
 
 type FormState = z.output<typeof schema>
 
+// Fixed list matching the backend's `config('ai.languages')` (M4/M8).
+const contentLanguages: { label: string, value: string }[] = [
+  { label: 'Polski', value: 'pl' },
+  { label: 'English', value: 'en' },
+  { label: 'Deutsch', value: 'de' },
+  { label: 'Español', value: 'es' },
+  { label: 'Français', value: 'fr' },
+  { label: 'Italiano', value: 'it' },
+  { label: 'Nederlands', value: 'nl' },
+  { label: 'Português', value: 'pt' },
+]
+
 const form = reactive<FormState>({
   title: '',
   slug: '',
   excerpt: '',
   content: '',
   main_image_url: null,
+  language: 'pl',
   seo: {
     meta_title: '',
     meta_description: '',
@@ -73,6 +87,7 @@ watch(() => props.initial, (post) => {
   form.excerpt = post.excerpt ?? ''
   form.content = post.content ?? ''
   form.main_image_url = post.main_image_url
+  form.language = post.language ?? 'pl'
   form.seo.meta_title = post.seo?.meta_title ?? ''
   form.seo.meta_description = post.seo?.meta_description ?? ''
   form.seo.og_image_url = post.seo?.og_image_url ?? ''
@@ -141,6 +156,7 @@ function buildPayload(): CreatePostPayload {
     excerpt: form.excerpt || null,
     content: form.content || '',
     main_image_url: form.main_image_url ?? null,
+    language: form.language || 'pl',
     seo: hasSeo ? seo : null,
   }
 }
@@ -259,6 +275,10 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
 
             <UFormField label="Zajawka (excerpt)" name="excerpt" :ui="{ label: 'field-label' }">
               <UTextarea v-model="form.excerpt" :rows="2" autoresize class="w-full" />
+            </UFormField>
+
+            <UFormField :label="$t('post.contentLanguage')" name="language" :ui="{ label: 'field-label' }">
+              <USelect v-model="form.language" :items="contentLanguages" class="w-full" />
             </UFormField>
           </div>
         </section>

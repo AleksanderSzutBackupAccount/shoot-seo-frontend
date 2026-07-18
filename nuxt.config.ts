@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint', '@nuxt/ui'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxtjs/i18n'],
   css: ['~/assets/css/main.css'],
 
   // Editorial brand: off-white canvas, light-first. Dark stays available.
@@ -13,7 +13,8 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'pl' },
+      // `<html lang>` is managed reactively by @nuxtjs/i18n (see app/app.vue's
+      // useLocaleHead wiring) — no static default here.
       link: [
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' },
@@ -32,5 +33,21 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Server-only. Base URL of the Laravel REST API the BFF proxies to.
     apiBase: process.env.API_BASE || 'http://localhost:8000/api',
+  },
+
+  i18n: {
+    defaultLocale: 'pl',
+    strategy: 'no_prefix',
+    langDir: 'locales',
+    locales: [
+      { code: 'pl', language: 'pl-PL', name: 'Polski', file: 'pl.json' },
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_locale',
+      redirectOn: 'root',
+      fallbackLocale: 'pl',
+    },
   },
 })

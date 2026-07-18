@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "groupContent": "Content",
+    "posts": "Posts",
+    "calendar": "Calendar",
+    "media": "Media",
+    "analytics": "Analytics",
+    "autonomous": "Autonomous",
+    "groupTeam": "Team",
+    "members": "Members",
+    "groupSettings": "Settings",
+    "apiWebhooks": "API & webhooks"
+  },
+  "shell": {
+    "account": "Account",
+    "verifyEmail": "Verify email",
+    "logout": "Log out",
+    "menuAriaLabel": "Menu",
+    "verifyEmailBanner": "Confirm your email address to unlock all features.",
+    "verifyCta": "Verify",
+    "milestoneLabel": "Milestone",
+    "milestoneDetail": "Content & Planner · M1",
+    "settingsApiKeys": "API keys",
+    "settingsWebhooks": "Webhooks",
+    "settingsChannels": "Channels",
+    "settingsBilling": "Plan & billing",
+    "workspaceNew": "New workspace",
+    "workspaceSelect": "Select workspace",
+    "languageSwitcherLabel": "Switch language"
+  },
+  "auth": {
+    "tagline": "Content · SEO · AI",
+    "headlineLine1": "Content that",
+    "headlineLine2": "ranks itself",
+    "headlineLine3": "in search.",
+    "lede": "Create, plan, and publish SEO content in one place — with AI assistance, built-in analytics, and integrations. Multi-tenant, for your whole team.",
+    "featureWorkspaces": "Workspaces & roles",
+    "featureScheduler": "Publishing scheduler",
+    "featureApi": "Headless API"
+  },
+  "post": {
+    "contentLanguage": "Content language"
+  },
+  "common": {
+    "unexpectedError": "An unexpected error occurred."
+  }
+}

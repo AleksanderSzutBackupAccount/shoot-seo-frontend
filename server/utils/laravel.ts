@@ -73,6 +73,9 @@ export async function proxyToLaravel<T>(
       return (error.data ?? { message: error.response.statusText }) as T
     }
     // Network / unexpected failure: the API is likely unreachable.
+    // TODO i18n (server context): this H3 event handler runs server-side with no
+    // request-scoped locale/`$t` available (unauthenticated callers, cron, etc.) —
+    // keep this message Polish-only until the BFF gains a locale-aware i18n setup.
     setResponseStatus(event, 502)
     return { message: 'Nie udało się połączyć z API.' } as T
   }

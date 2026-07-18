@@ -3,11 +3,12 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 
 const { user, logout, isEmailVerified } = useAuth()
 const mobileNav = ref(false)
+const { t } = useI18n()
 
 const userMenu = computed<DropdownMenuItem[][]>(() => [
-  [{ label: user.value?.name ?? 'Konto', type: 'label' }],
-  [{ label: 'Weryfikacja e-mail', icon: 'i-lucide-mail-check', to: '/verify-email' }],
-  [{ label: 'Wyloguj', icon: 'i-lucide-log-out', color: 'error', onSelect: () => logout() }],
+  [{ label: user.value?.name ?? t('shell.account'), type: 'label' }],
+  [{ label: t('shell.verifyEmail'), icon: 'i-lucide-mail-check', to: '/verify-email' }],
+  [{ label: t('shell.logout'), icon: 'i-lucide-log-out', color: 'error', onSelect: () => logout() }],
 ])
 </script>
 
@@ -28,8 +29,8 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
       </div>
 
       <div class="px-6 py-5" style="border-top: 1px solid var(--hairline)">
-        <p class="eyebrow">Milestone</p>
-        <p class="mt-1 text-sm" style="color: var(--body)">Content &amp; Planer · M1</p>
+        <p class="eyebrow">{{ $t('shell.milestoneLabel') }}</p>
+        <p class="mt-1 text-sm" style="color: var(--body)">{{ $t('shell.milestoneDetail') }}</p>
       </div>
     </aside>
 
@@ -45,13 +46,14 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
             color="neutral"
             variant="ghost"
             class="md:hidden"
-            aria-label="Menu"
+            :aria-label="$t('shell.menuAriaLabel')"
             @click="mobileNav = true"
           />
           <AppWorkspaceSwitcher />
         </div>
 
         <div class="flex items-center gap-1.5">
+          <AppLanguageSwitcher />
           <UColorModeButton />
           <UDropdownMenu :items="userMenu" :ui="{ content: 'w-56' }">
             <button class="flex items-center gap-2 rounded-full py-1 pl-1 pr-2.5 transition-colors hover:bg-[var(--surface-strong)]">
@@ -70,9 +72,9 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
         >
           <div class="flex items-center gap-2.5 text-sm" style="color: var(--body)">
             <UIcon name="i-lucide-mail-warning" class="size-4 shrink-0" style="color: var(--ink)" />
-            <span>Potwierdź swój adres e-mail, aby odblokować wszystkie funkcje.</span>
+            <span>{{ $t('shell.verifyEmailBanner') }}</span>
           </div>
-          <UButton to="/verify-email" size="xs" color="neutral" class="shrink-0">Weryfikuj</UButton>
+          <UButton to="/verify-email" size="xs" color="neutral" class="shrink-0">{{ $t('shell.verifyCta') }}</UButton>
         </div>
       </div>
 

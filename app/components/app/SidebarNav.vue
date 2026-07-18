@@ -3,19 +3,19 @@ const route = useRoute()
 const emit = defineEmits<{ navigate: [] }>()
 
 const groups = [
-  { label: null, items: [{ label: 'Pulpit', icon: 'i-lucide-layout-dashboard', to: '/dashboard' }] },
+  { labelKey: null, items: [{ labelKey: 'nav.dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboard' }] },
   {
-    label: 'Treść',
+    labelKey: 'nav.groupContent',
     items: [
-      { label: 'Treści', icon: 'i-lucide-file-text', to: '/posts' },
-      { label: 'Kalendarz', icon: 'i-lucide-calendar-days', to: '/calendar' },
-      { label: 'Media', icon: 'i-lucide-image', to: '/media' },
-      { label: 'Analityka', icon: 'i-lucide-chart-line', to: '/analytics' },
-      { label: 'Autonomia', icon: 'i-lucide-bot', to: '/autonomous' },
+      { labelKey: 'nav.posts', icon: 'i-lucide-file-text', to: '/posts' },
+      { labelKey: 'nav.calendar', icon: 'i-lucide-calendar-days', to: '/calendar' },
+      { labelKey: 'nav.media', icon: 'i-lucide-image', to: '/media' },
+      { labelKey: 'nav.analytics', icon: 'i-lucide-chart-line', to: '/analytics' },
+      { labelKey: 'nav.autonomous', icon: 'i-lucide-bot', to: '/autonomous' },
     ],
   },
-  { label: 'Zespół', items: [{ label: 'Członkowie', icon: 'i-lucide-users', to: '/members' }] },
-  { label: 'Ustawienia', items: [{ label: 'API i webhooki', icon: 'i-lucide-settings', to: '/settings/api-keys', match: '/settings' }] },
+  { labelKey: 'nav.groupTeam', items: [{ labelKey: 'nav.members', icon: 'i-lucide-users', to: '/members' }] },
+  { labelKey: 'nav.groupSettings', items: [{ labelKey: 'nav.apiWebhooks', icon: 'i-lucide-settings', to: '/settings/api-keys', match: '/settings' }] },
 ]
 
 function isActive(item: { to: string, match?: string }) {
@@ -27,7 +27,7 @@ function isActive(item: { to: string, match?: string }) {
 <template>
   <nav class="flex flex-col gap-7">
     <div v-for="(g, i) in groups" :key="i" class="flex flex-col gap-1">
-      <p v-if="g.label" class="eyebrow mb-1 px-3">{{ g.label }}</p>
+      <p v-if="g.labelKey" class="eyebrow mb-1 px-3">{{ $t(g.labelKey) }}</p>
       <NuxtLink
         v-for="item in g.items"
         :key="item.to"
@@ -37,7 +37,7 @@ function isActive(item: { to: string, match?: string }) {
         @click="emit('navigate')"
       >
         <UIcon :name="item.icon" class="size-[18px] shrink-0" />
-        <span>{{ item.label }}</span>
+        <span>{{ $t(item.labelKey) }}</span>
       </NuxtLink>
     </div>
   </nav>

@@ -132,6 +132,8 @@ export interface Post {
   scheduled_at: string | null
   published_at: string | null
   seo: Seo | null
+  /** Content language code (e.g. `pl`, `en`) — see `config('ai.languages')` on the backend. */
+  language?: string
   created_at: string
   updated_at: string
 }
@@ -145,6 +147,8 @@ export interface PostSummary {
   scheduled_at: string | null
   published_at: string | null
   main_image_url: string | null
+  /** Content language code (e.g. `pl`, `en`) — see `config('ai.languages')` on the backend. */
+  language?: string
   updated_at: string
 }
 
@@ -197,6 +201,8 @@ export interface CreatePostPayload {
   main_image_url?: string | null
   slug?: string
   seo?: Seo | null
+  /** Content language code (e.g. `pl`, `en`) — see `config('ai.languages')` on the backend. */
+  language?: string
 }
 
 /** All fields optional — PATCH sends only what changed. */

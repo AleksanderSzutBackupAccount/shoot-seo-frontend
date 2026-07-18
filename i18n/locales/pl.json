@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "dashboard": "Pulpit",
+    "groupContent": "Treść",
+    "posts": "Treści",
+    "calendar": "Kalendarz",
+    "media": "Media",
+    "analytics": "Analityka",
+    "autonomous": "Autonomia",
+    "groupTeam": "Zespół",
+    "members": "Członkowie",
+    "groupSettings": "Ustawienia",
+    "apiWebhooks": "API i webhooki"
+  },
+  "shell": {
+    "account": "Konto",
+    "verifyEmail": "Weryfikacja e-mail",
+    "logout": "Wyloguj",
+    "menuAriaLabel": "Menu",
+    "verifyEmailBanner": "Potwierdź swój adres e-mail, aby odblokować wszystkie funkcje.",
+    "verifyCta": "Weryfikuj",
+    "milestoneLabel": "Milestone",
+    "milestoneDetail": "Content & Planer · M1",
+    "settingsApiKeys": "Klucze API",
+    "settingsWebhooks": "Webhooki",
+    "settingsChannels": "Kanały",
+    "settingsBilling": "Plan i płatności",
+    "workspaceNew": "Nowy workspace",
+    "workspaceSelect": "Wybierz workspace",
+    "languageSwitcherLabel": "Zmień język"
+  },
+  "auth": {
+    "tagline": "Content · SEO · AI",
+    "headlineLine1": "Treść, która",
+    "headlineLine2": "pozycjonuje się",
+    "headlineLine3": "sama.",
+    "lede": "Twórz, planuj i publikuj treści SEO w jednym miejscu — z asystą AI, własną analityką i integracjami. Wielotenantowo, dla całego zespołu.",
+    "featureWorkspaces": "Workspace'y i role",
+    "featureScheduler": "Planer publikacji",
+    "featureApi": "Headless API"
+  },
+  "post": {
+    "contentLanguage": "Język treści"
+  },
+  "common": {
+    "unexpectedError": "Wystąpił nieoczekiwany błąd."
+  }
+}

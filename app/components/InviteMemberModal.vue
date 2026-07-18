@@ -8,14 +8,15 @@ const emit = defineEmits<{ invited: [] }>()
 
 const { inviteMember } = useWorkspace()
 const toast = useToast()
+const { t } = useI18n()
 
-const roleOptions: { label: string, value: Role }[] = [
-  { label: 'Użytkownik', value: 'user' },
-  { label: 'Administrator', value: 'admin' },
-]
+const roleOptions = computed<{ label: string, value: Role }[]>(() => [
+  { label: t('dashboard.roleUser'), value: 'user' },
+  { label: t('dashboard.roleAdmin'), value: 'admin' },
+])
 
 const schema = z.object({
-  email: z.string().email('Nieprawidłowy adres e-mail'),
+  email: z.string().email(t('auth.invalidEmail')),
   role: z.enum(['admin', 'user']),
 })
 type Schema = z.output<typeof schema>
@@ -38,7 +39,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   serverError.value = null
   try {
     await inviteMember(event.data.email, event.data.role)
-    toast.add({ title: 'Zaproszenie wysłane', color: 'success', icon: 'i-lucide-mail-check' })
+    toast.add({ title: t('members.toastInvited'), color: 'success', icon: 'i-lucide-mail-check' })
     emit('invited')
     open.value = false
   }
@@ -56,8 +57,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <UModal
     v-model:open="open"
-    title="Zaproś członka"
-    description="Wyślij zaproszenie e-mailem do wybranego workspace."
+    :title="$t('members.inviteModalTitle')"
+    :description="$t('members.inviteModalDescription')"
   >
     <template #body>
       <UAlert
@@ -70,10 +71,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       />
 
       <UForm ref="form" :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
-        <UFormField label="Adres e-mail" name="email">
-          <UInput v-model="state.email" type="email" placeholder="osoba@firma.pl" icon="i-lucide-mail" size="lg" class="w-full" />
+        <UFormField :label="$t('members.emailLabel')" name="email">
+          <UInput v-model="state.email" type="email" :placeholder="$t('members.emailPlaceholder')" icon="i-lucide-mail" size="lg" class="w-full" />
         </UFormField>
-        <UFormField label="Rola" name="role" help="Administratorzy mogą zarządzać treściami i zespołem.">
+        <UFormField :label="$t('members.roleLabel')" name="role" :help="$t('members.roleHelp')">
           <USelect v-model="state.role" :items="roleOptions" size="lg" class="w-full" />
         </UFormField>
       </UForm>
@@ -81,8 +82,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     <template #footer>
       <div class="flex w-full justify-end gap-2">
-        <UButton color="neutral" variant="ghost" @click="open = false">Anuluj</UButton>
-        <UButton color="neutral" :loading="loading" icon="i-lucide-send" @click="form?.submit()">Wyślij zaproszenie</UButton>
+        <UButton color="neutral" variant="ghost" @click="open = false">{{ $t('common.cancel') }}</UButton>
+        <UButton color="neutral" :loading="loading" icon="i-lucide-send" @click="form?.submit()">{{ $t('members.sendInvite') }}</UButton>
       </div>
     </template>
   </UModal>

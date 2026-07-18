@@ -7,6 +7,8 @@ import type { AnalyticsSeriesPoint } from '~~/shared/types/api'
 // and axis labels live in HTML so text is never distorted by the scaling.
 const props = defineProps<{ series: AnalyticsSeriesPoint[] }>()
 
+const { t, locale } = useI18n()
+
 const W = 1000
 const H = 300
 
@@ -64,14 +66,14 @@ const xLabels = computed(() => {
   <div class="chart">
     <div class="mb-3 flex items-center justify-between gap-4">
       <div class="flex items-center gap-4 text-xs" style="color: var(--muted)">
-        <span class="legend"><span class="legend-swatch legend-swatch--views" />Wyświetlenia</span>
-        <span class="legend"><span class="legend-swatch legend-swatch--uniques" />Unikalni</span>
+        <span class="legend"><span class="legend-swatch legend-swatch--views" />{{ t('analytics.colViews') }}</span>
+        <span class="legend"><span class="legend-swatch legend-swatch--uniques" />{{ t('analytics.colUniques') }}</span>
       </div>
-      <span class="text-xs tabular-nums" style="color: var(--muted-soft)">max {{ formatCount(geo.max) }}</span>
+      <span class="text-xs tabular-nums" style="color: var(--muted-soft)">max {{ formatCount(geo.max, locale) }}</span>
     </div>
 
     <div v-if="geo.n === 0" class="flex h-40 items-center justify-center text-sm" style="color: var(--muted-soft)">
-      Brak danych w tym okresie.
+      {{ t('analytics.noDataInRange') }}
     </div>
 
     <template v-else>
@@ -81,7 +83,7 @@ const xLabels = computed(() => {
           :viewBox="`0 0 ${W} ${H}`"
           preserveAspectRatio="none"
           role="img"
-          aria-label="Dzienny wykres wyświetleń i użytkowników unikalnych"
+          :aria-label="t('analytics.chartAriaLabel')"
         >
           <!-- gridlines -->
           <line
@@ -95,7 +97,7 @@ const xLabels = computed(() => {
           <!-- views bars (+ full-slot hover hit area with native tooltip) -->
           <g v-for="(b, i) in geo.bars" :key="`b${i}`" class="day">
             <rect class="bar-hit" :x="b.hitX" :y="0" :width="b.slotW" :height="H">
-              <title>{{ shortDay(b.point.date) }} — {{ formatCount(b.point.views) }} wyświetleń · {{ formatCount(b.point.uniques) }} unikalnych · {{ formatEngagement(b.point.avg_engagement_ms) }}</title>
+              <title>{{ t('analytics.chartTooltip', { day: shortDay(b.point.date), views: formatCount(b.point.views, locale), uniques: formatCount(b.point.uniques, locale), engagement: formatEngagement(b.point.avg_engagement_ms) }) }}</title>
             </rect>
             <rect class="bar" :x="b.barX" :y="b.barY" :width="b.barW" :height="b.barH" />
           </g>

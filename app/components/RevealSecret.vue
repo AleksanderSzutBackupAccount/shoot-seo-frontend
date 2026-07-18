@@ -4,16 +4,17 @@
 // it is never persisted or refetched.
 const props = defineProps<{ value: string, label?: string }>()
 const toast = useToast()
+const { t } = useI18n()
 const copied = ref(false)
 
 async function copy() {
   try {
     await navigator.clipboard.writeText(props.value)
     copied.value = true
-    toast.add({ title: 'Skopiowano do schowka', color: 'success', icon: 'i-lucide-check' })
+    toast.add({ title: t('common.copiedToClipboard'), color: 'success', icon: 'i-lucide-check' })
   }
   catch {
-    toast.add({ title: 'Nie udało się skopiować', color: 'error' })
+    toast.add({ title: t('common.copyFailed'), color: 'error' })
   }
 }
 </script>
@@ -23,8 +24,8 @@ async function copy() {
     <div class="reveal-warning">
       <UIcon name="i-lucide-shield-alert" class="size-[18px] shrink-0" />
       <p>
-        <strong>Skopiuj teraz — nie pokażemy go ponownie.</strong>
-        Ta wartość jest widoczna tylko raz, zaraz po utworzeniu. Przechowuj ją bezpiecznie.
+        <strong>{{ $t('common.secretRevealTitle') }}</strong>
+        {{ $t('common.secretRevealBody') }}
       </p>
     </div>
 
@@ -36,7 +37,7 @@ async function copy() {
         color="neutral"
         variant="soft"
         size="sm"
-        aria-label="Kopiuj wartość"
+        :aria-label="$t('common.copyValueAria')"
         @click="copy"
       />
     </div>

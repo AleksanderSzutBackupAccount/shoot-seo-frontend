@@ -4,16 +4,17 @@ import type { AnalyticsOverview } from '~~/shared/types/api'
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
-useHead({ title: () => `Analityka: ${slug.value} — Shoot SEO` })
+const { t } = useI18n()
+useHead({ title: () => t('analytics.postPageTitle', { slug: slug.value }) })
 
 const { current } = useWorkspace()
 const { fetchPost } = useAnalytics()
 
-const PRESETS = [
-  { days: 7, label: '7 dni' },
-  { days: 28, label: '28 dni' },
-  { days: 90, label: '90 dni' },
-]
+const PRESETS = computed(() => [
+  { days: 7, label: t('analytics.range7d') },
+  { days: 28, label: t('analytics.range28d') },
+  { days: 90, label: t('analytics.range90d') },
+])
 
 const rangeDays = ref(28)
 const range = computed(() => lastNDaysRange(rangeDays.value))
@@ -40,13 +41,13 @@ function plDate(iso: string): string {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Analityka / post"
+      :eyebrow="$t('analytics.postEyebrow')"
       :title="slug"
-      description="Ruch i zaangażowanie dla tego posta w wybranym okresie."
+      :description="$t('analytics.postDescription')"
     >
       <template #actions>
         <div class="flex items-center gap-3">
-          <div class="seg" role="group" aria-label="Zakres dat">
+          <div class="seg" role="group" :aria-label="$t('analytics.rangeAriaLabel')">
             <button
               v-for="preset in PRESETS"
               :key="preset.days"
@@ -59,7 +60,7 @@ function plDate(iso: string): string {
             </button>
           </div>
           <UButton to="/analytics" icon="i-lucide-arrow-left" color="neutral" variant="ghost" size="sm">
-            Wróć
+            {{ $t('analytics.back') }}
           </UButton>
         </div>
       </template>
@@ -72,11 +73,11 @@ function plDate(iso: string): string {
     <AppEmptyState
       v-else-if="!hasData"
       icon="i-lucide-chart-line"
-      title="Brak danych dla tego posta"
-      description="Ten post nie zebrał jeszcze ruchu w wybranym okresie."
+      :title="$t('analytics.postEmptyTitle')"
+      :description="$t('analytics.postEmptyDescription')"
     >
       <template #action>
-        <UButton to="/analytics" icon="i-lucide-arrow-left" color="neutral" variant="outline">Wróć do analityki</UButton>
+        <UButton to="/analytics" icon="i-lucide-arrow-left" color="neutral" variant="outline">{{ $t('analytics.backToAnalytics') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -89,7 +90,7 @@ function plDate(iso: string): string {
 
       <section class="u-card p-6">
         <div class="mb-4 flex items-baseline justify-between gap-4">
-          <h2 class="card-title">Dzienny ruch</h2>
+          <h2 class="card-title">{{ $t('analytics.dailyTraffic') }}</h2>
           <span class="text-xs" style="color: var(--muted-soft)">{{ plDate(range.from) }} — {{ plDate(range.to) }}</span>
         </div>
         <AppAnalyticsChart :series="overview?.series ?? []" />

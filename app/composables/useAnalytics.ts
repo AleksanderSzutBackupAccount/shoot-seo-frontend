@@ -32,9 +32,9 @@ export function formatEngagement(ms: number | null | undefined): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
-/** Thousands-grouped count in Polish locale (e.g. `1 234`). */
-export function formatCount(value: number | null | undefined): string {
-  return (value ?? 0).toLocaleString('pl-PL')
+/** Thousands-grouped count, formatted for the given locale (e.g. `1 234`). */
+export function formatCount(value: number | null | undefined, locale: string): string {
+  return (value ?? 0).toLocaleString(locale)
 }
 
 /**

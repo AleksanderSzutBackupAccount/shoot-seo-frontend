@@ -7,15 +7,16 @@ const open = defineModel<boolean>('open', { default: false })
 const emit = defineEmits<{ created: [] }>()
 
 const { create } = useApiKeys()
+const { t } = useI18n()
 
 // Known scopes for the read-only public v1 API. Optional — an empty selection
 // lets the backend apply its default access.
-const SCOPES: { value: string, hint: string }[] = [
-  { value: 'posts:read', hint: 'Odczyt opublikowanych treści przez publiczne API.' },
-]
+const SCOPES = computed<{ value: string, hint: string }[]>(() => [
+  { value: 'posts:read', hint: t('settings.apiKeys.scopePostsReadHint') },
+])
 
 const schema = z.object({
-  name: z.string().min(1, 'Podaj nazwę klucza'),
+  name: z.string().min(1, t('settings.apiKeys.nameRequired')),
 })
 type Schema = z.output<typeof schema>
 
@@ -29,11 +30,11 @@ const serverError = ref<string | null>(null)
 const createdKey = ref<ApiKey | null>(null)
 const plaintext = ref<string | null>(null)
 
-const title = computed(() => (createdKey.value ? 'Klucz utworzony' : 'Nowy klucz API'))
+const title = computed(() => (createdKey.value ? t('settings.apiKeys.createdTitle') : t('settings.apiKeys.createTitle')))
 const description = computed(() =>
   createdKey.value
-    ? 'Zapisz klucz w bezpiecznym miejscu — zobaczysz go tylko teraz.'
-    : 'Klucz umożliwia dostęp do publicznego API treści dla tego workspace.')
+    ? t('settings.apiKeys.createdDescription')
+    : t('settings.apiKeys.createDescription'))
 
 function reset() {
   state.name = ''
@@ -85,10 +86,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           </div>
           <div class="min-w-0">
             <p class="truncate text-sm" style="color: var(--ink); font-weight: 500">{{ createdKey.name }}</p>
-            <p class="text-xs" style="color: var(--muted)">Utworzono właśnie teraz</p>
+            <p class="text-xs" style="color: var(--muted)">{{ $t('settings.apiKeys.createdJustNow') }}</p>
           </div>
         </div>
-        <RevealSecret :value="plaintext" label="Twój klucz API" />
+        <RevealSecret :value="plaintext" :label="$t('settings.apiKeys.secretLabel')" />
       </div>
 
       <!-- Create form -->
@@ -103,11 +104,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         />
 
         <UForm ref="form" :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
-          <UFormField label="Nazwa" name="name" help="Do rozpoznania klucza, np. „Strona produkcyjna”.">
-            <UInput v-model="state.name" placeholder="np. Strona produkcyjna" icon="i-lucide-tag" size="lg" class="w-full" />
+          <UFormField :label="$t('settings.apiKeys.colName')" name="name" :help="$t('settings.apiKeys.nameHelp')">
+            <UInput v-model="state.name" :placeholder="$t('settings.apiKeys.namePlaceholder')" icon="i-lucide-tag" size="lg" class="w-full" />
           </UFormField>
 
-          <UFormField label="Zakresy" name="scopes" help="Opcjonalne. Ograniczają dostęp klucza.">
+          <UFormField :label="$t('settings.apiKeys.colScopes')" name="scopes" :help="$t('settings.apiKeys.scopesHelp')">
             <div class="flex flex-col gap-3">
               <UCheckbox
                 v-for="scope in SCOPES"
@@ -127,11 +128,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <template #footer>
       <div class="flex w-full justify-end gap-2">
         <template v-if="createdKey">
-          <UButton color="neutral" icon="i-lucide-check" @click="open = false">Gotowe</UButton>
+          <UButton color="neutral" icon="i-lucide-check" @click="open = false">{{ $t('common.done') }}</UButton>
         </template>
         <template v-else>
-          <UButton color="neutral" variant="ghost" @click="open = false">Anuluj</UButton>
-          <UButton color="neutral" :loading="loading" icon="i-lucide-plus" @click="form?.submit()">Utwórz klucz</UButton>
+          <UButton color="neutral" variant="ghost" @click="open = false">{{ $t('common.cancel') }}</UButton>
+          <UButton color="neutral" :loading="loading" icon="i-lucide-plus" @click="form?.submit()">{{ $t('settings.apiKeys.create') }}</UButton>
         </template>
       </div>
     </template>

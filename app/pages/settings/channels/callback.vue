@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Channel } from '~~/shared/types/api'
 
-useHead({ title: 'Łączenie kanału — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('settings.channels.callbackPageTitle') })
 
 const route = useRoute()
 const toast = useToast()
@@ -13,7 +14,7 @@ onMounted(async () => {
   const state = route.query.state as string
   try {
     await complete({ type, code, state })
-    toast.add({ title: 'Kanał podłączony', color: 'success' })
+    toast.add({ title: t('settings.channels.toastConnected'), color: 'success' })
   }
   catch (err) {
     toast.add({ title: parseApiError(err).message, color: 'error' })
@@ -28,9 +29,9 @@ onMounted(async () => {
 <template>
   <div class="u-card flex flex-col items-center gap-4 px-6 py-16 text-center">
     <UIcon name="i-lucide-loader-circle" class="size-8 animate-spin" style="color: var(--muted)" />
-    <p class="card-title" style="font-size: 1.25rem">Łączenie kanału…</p>
+    <p class="card-title" style="font-size: 1.25rem">{{ $t('settings.channels.callbackHeading') }}</p>
     <p class="max-w-sm text-[15px]" style="color: var(--muted)">
-      Za chwilę wrócisz do listy kanałów.
+      {{ $t('settings.channels.callbackHint') }}
     </p>
   </div>
 </template>

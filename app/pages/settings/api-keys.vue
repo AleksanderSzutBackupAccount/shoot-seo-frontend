@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { ApiKey } from '~~/shared/types/api'
 
-useHead({ title: 'Klucze API — Shoot SEO' })
+const { t, locale } = useI18n()
+useHead({ title: () => t('settings.apiKeys.pageTitle') })
 
 const { current } = useWorkspace()
 const { list, revoke } = useApiKeys()
@@ -18,18 +19,18 @@ const createOpen = ref(false)
 const revokeTarget = ref<ApiKey | null>(null)
 const revoking = ref(false)
 
-const columns: TableColumn<ApiKey>[] = [
-  { accessorKey: 'name', header: 'Nazwa' },
-  { id: 'prefix', header: 'Klucz' },
-  { id: 'scopes', header: 'Zakresy' },
-  { accessorKey: 'last_used_at', header: 'Ostatnie użycie' },
-  { accessorKey: 'created_at', header: 'Utworzono' },
+const columns = computed<TableColumn<ApiKey>[]>(() => [
+  { accessorKey: 'name', header: t('settings.apiKeys.colName') },
+  { id: 'prefix', header: t('settings.apiKeys.colKey') },
+  { id: 'scopes', header: t('settings.apiKeys.colScopes') },
+  { accessorKey: 'last_used_at', header: t('settings.apiKeys.colLastUsed') },
+  { accessorKey: 'created_at', header: t('settings.apiKeys.colCreated') },
   { id: 'actions', header: '' },
-]
+])
 
 function formatDate(value: string | null): string {
   if (!value) return '—'
-  return new Date(value).toLocaleDateString('pl-PL', { dateStyle: 'medium' })
+  return new Date(value).toLocaleDateString(locale.value, { dateStyle: 'medium' })
 }
 
 async function confirmRevoke() {
@@ -37,7 +38,7 @@ async function confirmRevoke() {
   revoking.value = true
   try {
     await revoke(revokeTarget.value.id)
-    toast.add({ title: 'Klucz odwołany', color: 'success' })
+    toast.add({ title: t('settings.apiKeys.toastRevoked'), color: 'success' })
     revokeTarget.value = null
     await refresh()
   }
@@ -53,13 +54,13 @@ async function confirmRevoke() {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Ustawienia"
-      title="Klucze API"
-      description="Klucze dają stronie klienta headless dostęp do publicznego API opublikowanych treści."
+      :eyebrow="$t('nav.groupSettings')"
+      :title="$t('shell.settingsApiKeys')"
+      :description="$t('settings.apiKeys.description')"
     >
       <template #actions>
         <UButton color="neutral" icon="i-lucide-plus" size="lg" @click="createOpen = true">
-          Utwórz klucz
+          {{ $t('settings.apiKeys.create') }}
         </UButton>
       </template>
     </AppPageHeader>
@@ -73,11 +74,11 @@ async function confirmRevoke() {
     <AppEmptyState
       v-else-if="(keys?.length ?? 0) === 0"
       icon="i-lucide-key-round"
-      title="Brak kluczy API"
-      description="Utwórz pierwszy klucz, aby udostępnić treści przez publiczne API. Pełny klucz pokażemy tylko raz."
+      :title="$t('settings.apiKeys.emptyTitle')"
+      :description="$t('settings.apiKeys.emptyDescription')"
     >
       <template #action>
-        <UButton color="neutral" icon="i-lucide-plus" @click="createOpen = true">Utwórz klucz</UButton>
+        <UButton color="neutral" icon="i-lucide-plus" @click="createOpen = true">{{ $t('settings.apiKeys.create') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -105,7 +106,7 @@ async function confirmRevoke() {
 
         <template #last_used_at-cell="{ row }">
           <span class="text-sm" style="color: var(--muted)">
-            {{ row.original.last_used_at ? formatDate(row.original.last_used_at) : 'Nigdy' }}
+            {{ row.original.last_used_at ? formatDate(row.original.last_used_at) : $t('settings.apiKeys.never') }}
           </span>
         </template>
 
@@ -120,7 +121,7 @@ async function confirmRevoke() {
               color="neutral"
               variant="ghost"
               size="sm"
-              aria-label="Odwołaj klucz"
+              :aria-label="$t('settings.apiKeys.revokeAria')"
               @click="revokeTarget = row.original"
             />
           </div>
@@ -132,14 +133,14 @@ async function confirmRevoke() {
 
     <UModal
       :open="revokeTarget !== null"
-      title="Odwołać klucz?"
-      :description="`Klucz „${revokeTarget?.name}” przestanie działać natychmiast. Tej operacji nie można cofnąć.`"
+      :title="$t('settings.apiKeys.revokeModalTitle')"
+      :description="$t('settings.apiKeys.revokeModalDescription', { name: revokeTarget?.name ?? '' })"
       @update:open="(value: boolean) => { if (!value) revokeTarget = null }"
     >
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" @click="revokeTarget = null">Anuluj</UButton>
-          <UButton color="error" :loading="revoking" @click="confirmRevoke">Odwołaj</UButton>
+          <UButton color="neutral" variant="ghost" @click="revokeTarget = null">{{ $t('common.cancel') }}</UButton>
+          <UButton color="error" :loading="revoking" @click="confirmRevoke">{{ $t('settings.apiKeys.revoke') }}</UButton>
         </div>
       </template>
     </UModal>

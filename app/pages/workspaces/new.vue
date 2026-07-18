@@ -3,12 +3,13 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Nowy workspace — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('workspaces.new.pageTitle') })
 
 const { create, workspaces } = useWorkspace()
 
 const schema = z.object({
-  name: z.string().min(1, 'Nazwa jest wymagana').max(120, 'Nazwa jest zbyt długa'),
+  name: z.string().min(1, t('workspaces.new.nameRequired')).max(120, t('workspaces.new.nameTooLong')),
 })
 type Schema = z.output<typeof schema>
 
@@ -43,10 +44,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <span class="surface-strong mb-5 flex size-12 items-center justify-center rounded-full">
         <UIcon name="i-lucide-building-2" class="size-5" style="color: var(--ink)" />
       </span>
-      <p class="eyebrow mb-3">Onboarding</p>
-      <h1 class="card-title">Utwórz workspace</h1>
+      <p class="eyebrow mb-3">{{ $t('workspaces.new.eyebrow') }}</p>
+      <h1 class="card-title">{{ $t('workspaces.new.title') }}</h1>
       <p class="mt-2 text-[15px]" style="color: var(--muted)">
-        Workspace to Twoja przestrzeń robocza. Zostaniesz jego administratorem.
+        {{ $t('workspaces.new.description') }}
       </p>
     </div>
 
@@ -60,14 +61,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     />
 
     <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UFormField label="Nazwa workspace" name="name">
-        <UInput v-model="state.name" placeholder="np. Moja Agencja" icon="i-lucide-building-2" class="w-full" />
+      <UFormField :label="$t('workspaces.new.nameLabel')" name="name">
+        <UInput v-model="state.name" :placeholder="$t('workspaces.new.namePlaceholder')" icon="i-lucide-building-2" class="w-full" />
       </UFormField>
-      <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">Utwórz workspace</UButton>
+      <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">{{ $t('workspaces.new.submit') }}</UButton>
     </UForm>
 
     <p v-if="hasWorkspaces" class="mt-9 text-center text-sm" style="color: var(--muted)">
-      <ULink to="/dashboard" class="auth-link auth-link--strong">Wróć do panelu</ULink>
+      <ULink to="/dashboard" class="auth-link auth-link--strong">{{ $t('workspaces.new.backToDashboard') }}</ULink>
     </p>
   </div>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { CurrentPlan, Plan } from '~~/shared/types/api'
 
-useHead({ title: 'Plan i płatności — Shoot SEO' })
+const { t, locale } = useI18n()
+useHead({ title: () => t('settings.billing.pageTitle') })
 
 const { current: currentWorkspace } = useWorkspace()
 const { fetchPlans, fetchCurrent, checkout, portal } = useBilling()
@@ -23,21 +24,21 @@ const loading = computed(() => status.value === 'pending' || plansStatus.value =
 /** Tracks which button triggered a redirect: a plan code, `'manage'`, or `null`. */
 const busy = ref<string | null>(null)
 
-const STATUS_LABELS: Record<string, string> = {
-  active: 'Aktywny',
-  trialing: 'Okres próbny',
-  past_due: 'Zaległa płatność',
-  canceled: 'Anulowana',
-  incomplete: 'Niedokończona',
-  free: 'Plan darmowy',
-}
+const STATUS_LABELS = computed<Record<string, string>>(() => ({
+  active: t('settings.billing.statusActive'),
+  trialing: t('settings.billing.statusTrialing'),
+  past_due: t('settings.billing.statusPastDue'),
+  canceled: t('settings.billing.statusCanceled'),
+  incomplete: t('settings.billing.statusIncomplete'),
+  free: t('settings.billing.statusFree'),
+}))
 
 function statusLabel(value: string): string {
-  return STATUS_LABELS[value] ?? value
+  return STATUS_LABELS.value[value] ?? value
 }
 
 function formatDate(value: string): string {
-  return new Date(value).toLocaleDateString('pl-PL', { dateStyle: 'medium' })
+  return new Date(value).toLocaleDateString(locale.value, { dateStyle: 'medium' })
 }
 
 function formatPrice(cents: number, currency: string): string {
@@ -52,7 +53,7 @@ async function upgrade(code: string) {
   catch (e: unknown) {
     const httpStatus = (e as { statusCode?: number }).statusCode
     toast.add({
-      title: httpStatus === 403 ? 'Tylko administrator może zmienić plan.' : 'Nie udało się rozpocząć płatności.',
+      title: httpStatus === 403 ? t('settings.billing.adminOnly') : t('settings.billing.checkoutFailed'),
       color: 'error',
     })
     busy.value = null
@@ -67,7 +68,7 @@ async function manage() {
   catch (e: unknown) {
     const httpStatus = (e as { statusCode?: number }).statusCode
     toast.add({
-      title: httpStatus === 403 ? 'Tylko administrator może zmienić plan.' : 'Brak aktywnej subskrypcji do zarządzania.',
+      title: httpStatus === 403 ? t('settings.billing.adminOnly') : t('settings.billing.noSubscription'),
       color: 'error',
     })
     busy.value = null
@@ -78,9 +79,9 @@ async function manage() {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Ustawienia"
-      title="Plan i płatności"
-      description="Zarządzaj planem subskrypcji, limitami AI i danymi rozliczeniowymi."
+      :eyebrow="$t('nav.groupSettings')"
+      :title="$t('shell.settingsBilling')"
+      :description="$t('settings.billing.description')"
     />
 
     <SettingsTabs />
@@ -93,13 +94,13 @@ async function manage() {
       <section class="u-card p-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="card-title">Twój plan</h2>
+            <h2 class="card-title">{{ $t('settings.billing.yourPlan') }}</h2>
             <p v-if="current" class="mt-2 text-sm" style="color: var(--muted)">
               {{ current.name }}
               <span class="chip" :class="current.status === 'active' || current.status === 'trialing' ? 'chip--published' : 'chip--draft'">
                 {{ statusLabel(current.status) }}
               </span>
-              <span v-if="current.current_period_end"> · odnowienie {{ formatDate(current.current_period_end) }}</span>
+              <span v-if="current.current_period_end"> · {{ $t('settings.billing.renewsOn', { date: formatDate(current.current_period_end) }) }}</span>
             </p>
           </div>
           <UButton
@@ -107,7 +108,7 @@ async function manage() {
             color="neutral" variant="soft" :loading="busy === 'manage'" :disabled="busy !== null"
             @click="manage"
           >
-            Zarządzaj subskrypcją
+            {{ $t('settings.billing.manage') }}
           </UButton>
         </div>
 
@@ -119,11 +120,11 @@ async function manage() {
           <h3 class="card-title">{{ plan.name }}</h3>
           <p class="mt-1 text-2xl" style="color: var(--ink)">
             {{ formatPrice(plan.price_cents, plan.currency) }}
-            <span class="text-sm" style="color: var(--muted)">/mies.</span>
+            <span class="text-sm" style="color: var(--muted)">{{ $t('settings.billing.perMonth') }}</span>
           </p>
           <ul class="mt-3 space-y-1 text-sm" style="color: var(--body)">
-            <li>AI: {{ plan.entitlements['ai.token_limit'].toLocaleString('pl-PL') }} tokenów/mies.</li>
-            <li>Autonomous: {{ plan.entitlements['autonomous.enabled'] ? 'tak' : 'nie' }}</li>
+            <li>{{ $t('settings.billing.aiTokensPerMonth', { tokens: plan.entitlements['ai.token_limit'].toLocaleString(locale) }) }}</li>
+            <li>{{ $t('settings.billing.autonomousLabel', { value: plan.entitlements['autonomous.enabled'] ? $t('common.yes') : $t('common.no') }) }}</li>
           </ul>
 
           <UButton
@@ -131,10 +132,10 @@ async function manage() {
             class="mt-4" color="neutral" :loading="busy === plan.code" :disabled="busy !== null"
             @click="upgrade(plan.code)"
           >
-            Wybierz {{ plan.name }}
+            {{ $t('settings.billing.choosePlan', { name: plan.name }) }}
           </UButton>
           <p v-else-if="current?.code === plan.code" class="mt-4 text-sm" style="color: var(--muted)">
-            Aktualny plan
+            {{ $t('settings.billing.currentPlan') }}
           </p>
         </div>
       </section>

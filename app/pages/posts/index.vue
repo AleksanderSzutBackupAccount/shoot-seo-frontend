@@ -3,7 +3,7 @@ import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import type { Channel, PostStatus, PostSummary, Publication } from '~~/shared/types/api'
 
 const { t, locale } = useI18n()
-useHead({ title: t('posts.pageTitle') })
+useHead({ title: () => t('posts.pageTitle') })
 
 const { current } = useWorkspace()
 const { list, publish, unpublish, remove } = usePosts()

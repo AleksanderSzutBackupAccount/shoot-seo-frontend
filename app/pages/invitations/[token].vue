@@ -2,7 +2,7 @@
 definePageMeta({ layout: 'auth' })
 
 const { t } = useI18n()
-useHead({ title: t('auth.invitationPageTitle') })
+useHead({ title: () => t('auth.invitationPageTitle') })
 
 const route = useRoute()
 const token = route.params.token as string

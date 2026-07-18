@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
-useHead({ title: t('dashboard.pageTitle') })
+useHead({ title: () => t('dashboard.pageTitle') })
 
 const { user } = useAuth()
 const { current } = useWorkspace()

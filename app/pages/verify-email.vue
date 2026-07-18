@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
-useHead({ title: t('auth.verifyPageTitle') })
+useHead({ title: () => t('auth.verifyPageTitle') })
 
 const { user, isEmailVerified, verifyEmail, resendVerification } = useAuth()
 const route = useRoute()

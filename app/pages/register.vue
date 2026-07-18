@@ -5,7 +5,7 @@ import * as z from 'zod'
 definePageMeta({ layout: 'auth' })
 
 const { t } = useI18n()
-useHead({ title: t('auth.registerPageTitle') })
+useHead({ title: () => t('auth.registerPageTitle') })
 
 const { register } = useAuth()
 

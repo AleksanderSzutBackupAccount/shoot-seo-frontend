@@ -2,7 +2,7 @@
 import type { CalendarEntry, Channel, Publication } from '~~/shared/types/api'
 
 const { t } = useI18n()
-useHead({ title: t('calendar.pageTitle') })
+useHead({ title: () => t('calendar.pageTitle') })
 
 const { current } = useWorkspace()
 const { fetchCalendar } = usePosts()

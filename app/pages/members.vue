@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Member, Role } from '~~/shared/types/api'
 
-useHead({ title: 'Członkowie — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('members.pageTitle') })
 
 const { user } = useAuth()
 const { current, isAdmin, fetchMembers, changeMemberRole, removeMember } = useWorkspace()
@@ -14,21 +15,21 @@ const { data: members, status, refresh } = await useAsyncData(
   { watch: [() => current.value?.id], default: () => [] as Member[] },
 )
 
-const roleOptions: { label: string, value: Role }[] = [
-  { label: 'Użytkownik', value: 'user' },
-  { label: 'Administrator', value: 'admin' },
-]
+const roleOptions = computed<{ label: string, value: Role }[]>(() => [
+  { label: t('dashboard.roleUser'), value: 'user' },
+  { label: t('dashboard.roleAdmin'), value: 'admin' },
+])
 
 function roleLabel(role: Role): string {
-  return roleOptions.find(o => o.value === role)?.label ?? role
+  return roleOptions.value.find(o => o.value === role)?.label ?? role
 }
 
-const columns: TableColumn<Member>[] = [
-  { accessorKey: 'name', header: 'Imię i nazwisko' },
-  { accessorKey: 'email', header: 'E-mail' },
-  { accessorKey: 'role', header: 'Rola' },
+const columns = computed<TableColumn<Member>[]>(() => [
+  { accessorKey: 'name', header: t('auth.nameLabel') },
+  { accessorKey: 'email', header: t('auth.emailLabel') },
+  { accessorKey: 'role', header: t('members.roleLabel') },
   { id: 'actions', header: '' },
-]
+])
 
 const inviteOpen = ref(false)
 const removeTarget = ref<Member | null>(null)
@@ -44,7 +45,7 @@ async function onRoleChange(member: Member, role: Role) {
   busyUserId.value = member.user_id
   try {
     await changeMemberRole(member.user_id, role)
-    toast.add({ title: 'Zmieniono rolę', color: 'success' })
+    toast.add({ title: t('members.toastRoleChanged'), color: 'success' })
     await refresh()
   }
   catch (err) {
@@ -60,7 +61,7 @@ async function confirmRemove() {
   removing.value = true
   try {
     await removeMember(removeTarget.value.user_id)
-    toast.add({ title: 'Usunięto członka', color: 'success' })
+    toast.add({ title: t('members.toastRemoved'), color: 'success' })
     removeTarget.value = null
     await refresh()
   }
@@ -76,13 +77,13 @@ async function confirmRemove() {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Zespół"
-      title="Członkowie"
-      :description="`Osoby z dostępem do workspace „${current?.name ?? '—'}” i ich role.`"
+      :eyebrow="$t('nav.groupTeam')"
+      :title="$t('nav.members')"
+      :description="$t('members.description', { workspace: current?.name ?? '—' })"
     >
       <template #actions>
         <UButton v-if="isAdmin" color="neutral" icon="i-lucide-user-plus" size="lg" @click="inviteOpen = true">
-          Zaproś
+          {{ $t('members.invite') }}
         </UButton>
       </template>
     </AppPageHeader>
@@ -131,10 +132,10 @@ async function confirmRemove() {
               color="neutral"
               variant="ghost"
               size="sm"
-              aria-label="Usuń członka"
+              :aria-label="$t('members.removeAria')"
               @click="removeTarget = row.original"
             />
-            <span v-else-if="isSelf(row.original)" class="text-xs" style="color: var(--muted-soft)">To Ty</span>
+            <span v-else-if="isSelf(row.original)" class="text-xs" style="color: var(--muted-soft)">{{ $t('members.isYou') }}</span>
           </div>
         </template>
       </UTable>
@@ -144,14 +145,14 @@ async function confirmRemove() {
 
     <UModal
       :open="removeTarget !== null"
-      title="Usunąć członka?"
-      :description="`Czy na pewno chcesz usunąć ${removeTarget?.name} z workspace?`"
+      :title="$t('members.removeModalTitle')"
+      :description="$t('members.removeModalDescription', { name: removeTarget?.name ?? '' })"
       @update:open="(value: boolean) => { if (!value) removeTarget = null }"
     >
       <template #footer>
         <div class="flex justify-end gap-2 w-full">
-          <UButton color="neutral" variant="ghost" @click="removeTarget = null">Anuluj</UButton>
-          <UButton color="error" :loading="removing" @click="confirmRemove">Usuń</UButton>
+          <UButton color="neutral" variant="ghost" @click="removeTarget = null">{{ $t('common.cancel') }}</UButton>
+          <UButton color="error" :loading="removing" @click="confirmRemove">{{ $t('common.delete') }}</UButton>
         </div>
       </template>
     </UModal>

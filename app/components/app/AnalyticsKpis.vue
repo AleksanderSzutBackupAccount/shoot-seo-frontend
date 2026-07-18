@@ -7,10 +7,12 @@ const props = defineProps<{
   avgEngagementMs: number
 }>()
 
+const { t, locale } = useI18n()
+
 const cards = computed(() => [
-  { eyebrow: 'Wyświetlenia', icon: 'i-lucide-eye', value: formatCount(props.views), hint: 'w wybranym okresie' },
-  { eyebrow: 'Unikalni', icon: 'i-lucide-users', value: formatCount(props.uniques), hint: 'unikalnych użytkowników' },
-  { eyebrow: 'Śr. czas zaangażowania', icon: 'i-lucide-timer', value: formatEngagement(props.avgEngagementMs), hint: 'na wyświetlenie' },
+  { eyebrow: t('analytics.colViews'), icon: 'i-lucide-eye', value: formatCount(props.views, locale.value), hint: t('analytics.hintViews') },
+  { eyebrow: t('analytics.colUniques'), icon: 'i-lucide-users', value: formatCount(props.uniques, locale.value), hint: t('analytics.hintUniques') },
+  { eyebrow: t('analytics.avgEngagementEyebrow'), icon: 'i-lucide-timer', value: formatEngagement(props.avgEngagementMs), hint: t('analytics.hintAvgEngagement') },
 ])
 </script>
 

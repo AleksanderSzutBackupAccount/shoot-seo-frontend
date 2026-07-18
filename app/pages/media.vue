@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Media } from '~~/shared/types/api'
 
-useHead({ title: 'Media — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('media.pageTitle') })
 
 const { current } = useWorkspace()
 const { list, upload } = useMedia()
@@ -30,7 +31,7 @@ async function onFileChange(event: Event) {
     for (const file of files) {
       await upload(file)
     }
-    toast.add({ title: files.length > 1 ? 'Przesłano pliki' : 'Przesłano plik', color: 'success' })
+    toast.add({ title: files.length > 1 ? t('media.toastUploadedMultiple') : t('media.toastUploadedSingle'), color: 'success' })
     await refresh()
   }
   catch (err) {
@@ -50,10 +51,10 @@ function formatSize(bytes: number): string {
 async function copyUrl(url: string) {
   try {
     await navigator.clipboard.writeText(url)
-    toast.add({ title: 'Skopiowano URL', color: 'success' })
+    toast.add({ title: t('media.toastCopiedUrl'), color: 'success' })
   }
   catch {
-    toast.add({ title: 'Nie udało się skopiować', color: 'error' })
+    toast.add({ title: t('common.copyFailed'), color: 'error' })
   }
 }
 </script>
@@ -61,13 +62,13 @@ async function copyUrl(url: string) {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Media"
-      title="Biblioteka mediów"
-      :description="`Pliki i grafiki workspace „${current?.name ?? '—'}” — gotowe do użycia we wpisach.`"
+      :eyebrow="$t('nav.media')"
+      :title="$t('media.libraryTitle')"
+      :description="$t('media.description', { workspace: current?.name ?? '—' })"
     >
       <template #actions>
         <UButton color="neutral" icon="i-lucide-upload" size="lg" :loading="uploading" @click="triggerUpload">
-          Prześlij
+          {{ $t('media.upload') }}
         </UButton>
         <input
           ref="fileInput"
@@ -87,11 +88,11 @@ async function copyUrl(url: string) {
     <AppEmptyState
       v-else-if="!media || media.length === 0"
       icon="i-lucide-image-off"
-      title="Brak mediów"
-      description="Prześlij pierwszy plik, aby wykorzystać go we wpisach."
+      :title="$t('media.emptyTitle')"
+      :description="$t('media.emptyDescription')"
     >
       <template #action>
-        <UButton color="neutral" icon="i-lucide-upload" :loading="uploading" @click="triggerUpload">Prześlij plik</UButton>
+        <UButton color="neutral" icon="i-lucide-upload" :loading="uploading" @click="triggerUpload">{{ $t('media.uploadFile') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -111,7 +112,7 @@ async function copyUrl(url: string) {
               icon="i-lucide-copy"
               color="neutral"
               size="sm"
-              aria-label="Kopiuj URL"
+              :aria-label="$t('media.copyUrl')"
               @click="copyUrl(item.url)"
             />
             <UButton
@@ -120,7 +121,7 @@ async function copyUrl(url: string) {
               size="sm"
               :to="item.url"
               target="_blank"
-              aria-label="Otwórz"
+              :aria-label="$t('media.open')"
             />
           </div>
         </div>

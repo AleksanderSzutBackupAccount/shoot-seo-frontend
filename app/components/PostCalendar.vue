@@ -18,6 +18,8 @@ const emit = defineEmits<{
   monthChange: [month: string]
 }>()
 
+const { t } = useI18n()
+
 function publicationsFor(postId: string): Publication[] {
   return props.publicationsByPost.get(postId) ?? []
 }
@@ -36,11 +38,11 @@ function onPlaceholder(value: { year: number, month: number }) {
   emit('monthChange', `${value.year}-${String(value.month).padStart(2, '0')}`)
 }
 
-const statusMeta: Record<PostStatus, { label: string, chip: string, dot: string }> = {
-  draft: { label: 'Szkic', chip: 'chip--draft', dot: 'cal-dot--draft' },
-  scheduled: { label: 'Zaplanowany', chip: 'chip--scheduled', dot: 'cal-dot--scheduled' },
-  published: { label: 'Opublikowany', chip: 'chip--published', dot: 'cal-dot--published' },
-}
+const statusMeta = computed<Record<PostStatus, { label: string, chip: string, dot: string }>>(() => ({
+  draft: { label: t('common.statusDraft'), chip: 'chip--draft', dot: 'cal-dot--draft' },
+  scheduled: { label: t('common.statusScheduled'), chip: 'chip--scheduled', dot: 'cal-dot--scheduled' },
+  published: { label: t('common.statusPublished'), chip: 'chip--published', dot: 'cal-dot--published' },
+}))
 
 // Stable priority order for the day-cell status dots.
 const statusOrder: PostStatus[] = ['published', 'scheduled', 'draft']
@@ -113,8 +115,8 @@ function formatSelected(date: DateValue): string {
         class="mt-4 flex items-center justify-center gap-5 pt-4 text-xs"
         style="width: 100%; border-top: 1px solid var(--hairline-soft); color: var(--muted)"
       >
-        <span class="inline-flex items-center gap-1.5"><span class="cal-dot cal-dot--published" />Opublikowane</span>
-        <span class="inline-flex items-center gap-1.5"><span class="cal-dot cal-dot--scheduled" />Zaplanowane</span>
+        <span class="inline-flex items-center gap-1.5"><span class="cal-dot cal-dot--published" />{{ $t('calendar.legendPublished') }}</span>
+        <span class="inline-flex items-center gap-1.5"><span class="cal-dot cal-dot--scheduled" />{{ $t('calendar.legendScheduled') }}</span>
       </div>
     </div>
 
@@ -123,8 +125,8 @@ function formatSelected(date: DateValue): string {
       <div class="flex items-center gap-2.5 px-5 py-4" style="border-bottom: 1px solid var(--hairline)">
         <UIcon name="i-lucide-calendar-days" class="size-[18px]" style="color: var(--muted)" />
         <h3 style="font-weight: 600; color: var(--ink)">
-          <template v-if="selected">Publikacje · {{ formatSelected(selected) }}</template>
-          <template v-else>Wybierz dzień</template>
+          <template v-if="selected">{{ $t('calendar.entriesFor', { date: formatSelected(selected) }) }}</template>
+          <template v-else>{{ $t('calendar.selectDay') }}</template>
         </h3>
       </div>
 
@@ -157,11 +159,11 @@ function formatSelected(date: DateValue): string {
               </NuxtLink>
             </li>
           </ul>
-          <p v-else class="py-4 text-sm" style="color: var(--muted)">Brak publikacji tego dnia.</p>
+          <p v-else class="py-4 text-sm" style="color: var(--muted)">{{ $t('calendar.noEntriesForDay') }}</p>
         </template>
 
         <p v-else class="py-4 text-sm" style="color: var(--muted)">
-          Kliknij dzień w kalendarzu, aby zobaczyć zaplanowane i opublikowane wpisy.
+          {{ $t('calendar.selectDayHint') }}
         </p>
       </div>
     </div>

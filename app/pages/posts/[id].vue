@@ -6,6 +6,7 @@ const id = computed(() => route.params.id as string)
 
 const { current } = useWorkspace()
 const { get } = usePosts()
+const { t } = useI18n()
 
 const { data: post, status, error } = await useAsyncData(
   () => `post-${id.value}`,
@@ -13,8 +14,8 @@ const { data: post, status, error } = await useAsyncData(
   { watch: [id, () => current.value?.id] },
 )
 
-const title = computed(() => post.value?.title ?? 'Wpis')
-useHead({ title: () => `${title.value} — Shoot SEO` })
+const title = computed(() => post.value?.title ?? t('posts.defaultTitle'))
+useHead({ title: () => t('posts.editPageTitle', { title: title.value }) })
 </script>
 
 <template>
@@ -26,11 +27,11 @@ useHead({ title: () => `${title.value} — Shoot SEO` })
     <AppEmptyState
       v-else-if="error || !post"
       icon="i-lucide-file-x"
-      title="Nie znaleziono wpisu"
-      description="Wpis nie istnieje lub nie należy do bieżącego workspace."
+      :title="$t('posts.notFoundTitle')"
+      :description="$t('posts.notFoundDescription')"
     >
       <template #action>
-        <UButton to="/posts" icon="i-lucide-arrow-left" color="neutral" variant="outline">Wróć do treści</UButton>
+        <UButton to="/posts" icon="i-lucide-arrow-left" color="neutral" variant="outline">{{ $t('posts.backToPosts') }}</UButton>
       </template>
     </AppEmptyState>
 

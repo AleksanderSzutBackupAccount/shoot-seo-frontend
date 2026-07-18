@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { Media } from '~~/shared/types/api'
 
-withDefaults(defineProps<{
+const props = defineProps<{
   label?: string
-}>(), {
-  label: 'Obraz',
-})
+}>()
 
 const model = defineModel<string | null>({ default: null })
 
 const { list, upload } = useMedia()
 const toast = useToast()
+const { t } = useI18n()
+
+// `props.label` distinguishes "omitted" (undefined -> translated default) from
+// an explicit empty string (falsy, hides the label) — see template `v-if`.
+const displayLabel = computed(() => props.label ?? t('media.defaultLabel'))
 
 const open = ref(false)
 const library = ref<Media[]>([])
@@ -70,13 +73,13 @@ async function onFileChange(event: Event) {
 
 <template>
   <div class="space-y-2.5">
-    <p v-if="label" class="field-label">{{ label }}</p>
+    <p v-if="displayLabel" class="field-label">{{ displayLabel }}</p>
 
     <!-- Selected preview -->
     <div v-if="model" class="relative w-full max-w-md">
       <img
         :src="model"
-        alt="Podgląd"
+        :alt="$t('media.previewAlt')"
         class="h-48 w-full rounded-xl object-cover"
         style="border: 1px solid var(--hairline)"
       >
@@ -85,14 +88,14 @@ async function onFileChange(event: Event) {
           icon="i-lucide-replace"
           color="neutral"
           size="xs"
-          aria-label="Zmień obraz"
+          :aria-label="$t('media.changeImage')"
           @click="open = true"
         />
         <UButton
           icon="i-lucide-x"
           color="error"
           size="xs"
-          aria-label="Usuń obraz"
+          :aria-label="$t('media.removeImage')"
           @click="clear"
         />
       </div>
@@ -106,23 +109,23 @@ async function onFileChange(event: Event) {
       @click="open = true"
     >
       <UIcon name="i-lucide-image-plus" class="size-6" />
-      <span class="media-drop__label">Wybierz obraz</span>
-      <span class="media-drop__hint">z biblioteki lub prześlij nowy</span>
+      <span class="media-drop__label">{{ $t('media.selectImage') }}</span>
+      <span class="media-drop__hint">{{ $t('media.selectImageHint') }}</span>
     </button>
 
     <!-- Picker modal -->
-    <UModal v-model:open="open" title="Biblioteka mediów" :ui="{ content: 'max-w-3xl' }">
+    <UModal v-model:open="open" :title="$t('media.libraryTitle')" :ui="{ content: 'max-w-3xl' }">
       <template #body>
         <div class="space-y-5">
           <div class="flex items-center justify-between gap-3">
-            <p class="text-sm" style="color: var(--muted)">Wybierz istniejący plik lub prześlij nowy.</p>
+            <p class="text-sm" style="color: var(--muted)">{{ $t('media.libraryDescription') }}</p>
             <UButton
               icon="i-lucide-upload"
               color="neutral"
               :loading="uploading"
               @click="triggerUpload"
             >
-              Prześlij
+              {{ $t('media.upload') }}
             </UButton>
             <input
               ref="fileInput"
@@ -142,7 +145,7 @@ async function onFileChange(event: Event) {
             class="flex flex-col items-center justify-center gap-2 py-12 text-center"
           >
             <UIcon name="i-lucide-image-off" class="size-8" style="color: var(--muted-soft)" />
-            <p class="text-sm" style="color: var(--muted)">Brak mediów. Prześlij pierwszy plik.</p>
+            <p class="text-sm" style="color: var(--muted)">{{ $t('media.empty') }}</p>
           </div>
 
           <div v-else class="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">

@@ -74,10 +74,10 @@ async function toggle(channelId: string, checked: boolean) {
 <template>
   <section class="u-card p-6">
     <div class="flex items-center justify-between gap-2">
-      <h2 class="card-title" style="font-size: 1.25rem">Dystrybucja</h2>
+      <h2 class="card-title" style="font-size: 1.25rem">{{ $t('distribution.title') }}</h2>
       <UIcon v-if="saving" name="i-lucide-loader-circle" class="size-4 animate-spin" style="color: var(--muted)" />
     </div>
-    <p class="mt-1 text-sm" style="color: var(--muted)">Wybierz kanały społecznościowe, na których opublikujemy ten wpis.</p>
+    <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('distribution.description') }}</p>
 
     <div v-if="loading" class="mt-5 flex justify-center py-4">
       <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" style="color: var(--muted)" />
@@ -88,9 +88,9 @@ async function toggle(channelId: string, checked: boolean) {
       class="mt-4 flex flex-col items-start gap-3 rounded-lg p-4"
       style="background: var(--surface-strong); border: 1px solid var(--hairline)"
     >
-      <p class="text-sm" style="color: var(--muted)">Brak podłączonych kanałów społecznościowych.</p>
+      <p class="text-sm" style="color: var(--muted)">{{ $t('distribution.noChannels') }}</p>
       <UButton to="/settings/channels" color="neutral" variant="outline" size="sm" icon="i-lucide-link">
-        Podłącz kanał
+        {{ $t('distribution.connectChannel') }}
       </UButton>
     </div>
 

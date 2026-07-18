@@ -8,7 +8,7 @@ defineProps<{ brief: AutonomousBrief }>()
 <template>
   <div class="space-y-3">
     <div class="flex items-center gap-2">
-      <span class="eyebrow">Ton</span>
+      <span class="eyebrow">{{ $t('autonomous.toneLabel') }}</span>
       <span class="badge-pill">{{ brief.tone }}</span>
     </div>
     <p class="text-sm leading-relaxed" style="color: var(--body)">{{ brief.summary }}</p>

@@ -7,7 +7,8 @@ import type {
   AutonomousSite,
 } from '~~/shared/types/api'
 
-useHead({ title: 'Autonomia — Shoot SEO' })
+const { t, locale } = useI18n()
+useHead({ title: () => t('autonomous.pageTitle') })
 
 const { current } = useWorkspace()
 const toast = useToast()
@@ -39,9 +40,9 @@ function handleWrite(e: unknown): void {
   const status = (e as { statusCode?: number, status?: number, response?: { status?: number } })
   if (status?.statusCode === 403 || status?.status === 403 || status?.response?.status === 403) {
     gated.value = true
-    toast.add({ title: 'Funkcja niedostępna w tym planie', description: 'Autonomia wymaga wyższego planu.', color: 'warning' })
+    toast.add({ title: t('autonomous.gate.toastTitle'), description: t('autonomous.gate.toastDescription'), color: 'warning' })
   } else {
-    toast.add({ title: 'Coś poszło nie tak', color: 'error' })
+    toast.add({ title: t('autonomous.genericError'), color: 'error' })
   }
 }
 
@@ -72,11 +73,12 @@ async function crawl(site: AutonomousSite): Promise<void> {
 const readySites = computed(() => sites.value?.filter(s => s.status === 'ready') ?? [])
 const planSiteId = ref('')
 const planFrequency = ref<AutonomousFrequency>('daily')
+// Default AI content tone — a real default value sent to the backend, not UI chrome; left untranslated.
 const planTone = ref('profesjonalny')
-const frequencyOptions = [
-  { label: 'Codziennie', value: 'daily' },
-  { label: 'Co tydzień', value: 'weekly' },
-]
+const frequencyOptions = computed(() => [
+  { label: t('autonomous.frequency.daily'), value: 'daily' },
+  { label: t('autonomous.frequency.weekly'), value: 'weekly' },
+])
 
 async function submitPlan(): Promise<void> {
   if (!planSiteId.value) return
@@ -98,25 +100,25 @@ async function togglePlan(plan: AutonomousPlan): Promise<void> {
   }
 }
 
-const siteStatusMeta: Record<AutonomousSite['status'], { label: string, color: 'neutral' | 'warning' | 'success' | 'error' }> = {
-  pending: { label: 'oczekuje', color: 'neutral' },
-  crawling: { label: 'crawl…', color: 'warning' },
-  ready: { label: 'gotowa', color: 'success' },
-  failed: { label: 'błąd', color: 'error' },
-}
+const siteStatusMeta = computed<Record<AutonomousSite['status'], { label: string, color: 'neutral' | 'warning' | 'success' | 'error' }>>(() => ({
+  pending: { label: t('autonomous.status.pending'), color: 'neutral' },
+  crawling: { label: t('autonomous.status.crawling'), color: 'warning' },
+  ready: { label: t('autonomous.status.ready'), color: 'success' },
+  failed: { label: t('autonomous.status.failed'), color: 'error' },
+}))
 
 function plDateTime(iso: string | null): string {
   if (!iso) return '—'
-  return new Date(iso).toLocaleString('pl-PL', { dateStyle: 'short', timeStyle: 'short' })
+  return new Date(iso).toLocaleString(locale.value, { dateStyle: 'short', timeStyle: 'short' })
 }
 </script>
 
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Autonomia"
-      title="Autonomiczne treści"
-      description="Crawluj stronę klienta, zbuduj brief i pozwól AI proponować szkice według harmonogramu."
+      :eyebrow="$t('nav.autonomous')"
+      :title="$t('autonomous.title')"
+      :description="$t('autonomous.description')"
     />
 
     <UAlert
@@ -125,28 +127,28 @@ function plDateTime(iso: string | null): string {
       color="warning"
       variant="subtle"
       icon="i-lucide-lock"
-      title="Ta funkcja wymaga wyższego planu"
-      description="Autonomiczne generowanie treści jest dostępne w planach Pro i Business."
+      :title="$t('autonomous.gate.alertTitle')"
+      :description="$t('autonomous.gate.alertDescription')"
     >
       <template #actions>
-        <UButton to="/settings/billing" color="neutral" size="sm">Zobacz plany</UButton>
+        <UButton to="/settings/billing" color="neutral" size="sm">{{ $t('autonomous.gate.cta') }}</UButton>
       </template>
     </UAlert>
 
     <div class="space-y-6">
       <!-- Sites -->
       <section class="u-card p-6">
-        <h2 class="card-title mb-4">Strony</h2>
+        <h2 class="card-title mb-4">{{ $t('autonomous.sitesTitle') }}</h2>
         <form class="mb-5 flex flex-wrap items-center gap-3" @submit.prevent="addSite">
-          <UInput v-model="newUrl" type="url" placeholder="https://strona-klienta.pl" class="min-w-64 flex-1" />
-          <UButton type="submit" icon="i-lucide-plus" color="neutral">Dodaj stronę</UButton>
+          <UInput v-model="newUrl" type="url" :placeholder="$t('autonomous.siteUrlPlaceholder')" class="min-w-64 flex-1" />
+          <UButton type="submit" icon="i-lucide-plus" color="neutral">{{ $t('autonomous.addSite') }}</UButton>
         </form>
 
         <AppEmptyState
           v-if="(sites?.length ?? 0) === 0"
           icon="i-lucide-globe"
-          title="Brak stron"
-          description="Dodaj adres strony klienta, aby zbudować brief i uruchomić autonomiczną generację."
+          :title="$t('autonomous.sitesEmptyTitle')"
+          :description="$t('autonomous.sitesEmptyDescription')"
         />
 
         <div v-else class="space-y-3">
@@ -154,12 +156,12 @@ function plDateTime(iso: string | null): string {
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="min-w-0">
                 <p class="truncate font-medium" style="color: var(--ink)">{{ site.url }}</p>
-                <p class="text-xs" style="color: var(--muted-soft)">Ostatni crawl: {{ plDateTime(site.last_crawled_at) }}</p>
+                <p class="text-xs" style="color: var(--muted-soft)">{{ $t('autonomous.lastCrawl', { date: plDateTime(site.last_crawled_at) }) }}</p>
               </div>
               <div class="flex items-center gap-3">
                 <UBadge :color="siteStatusMeta[site.status].color" variant="subtle">{{ siteStatusMeta[site.status].label }}</UBadge>
                 <UButton size="sm" color="neutral" variant="outline" icon="i-lucide-radar" :loading="busy[site.id]" @click="crawl(site)">
-                  Crawluj
+                  {{ $t('autonomous.crawl') }}
                 </UButton>
               </div>
             </div>
@@ -172,57 +174,57 @@ function plDateTime(iso: string | null): string {
 
       <!-- Plans -->
       <section class="u-card p-6">
-        <h2 class="card-title mb-4">Plany</h2>
+        <h2 class="card-title mb-4">{{ $t('autonomous.plansTitle') }}</h2>
         <form class="mb-5 flex flex-wrap items-end gap-3" @submit.prevent="submitPlan">
           <div class="min-w-56 flex-1">
-            <label class="eyebrow mb-1 block">Strona (gotowa)</label>
+            <label class="eyebrow mb-1 block">{{ $t('autonomous.siteReadyLabel') }}</label>
             <USelect
               v-model="planSiteId"
               :items="readySites.map(s => ({ label: s.url, value: s.id }))"
-              placeholder="Wybierz stronę"
+              :placeholder="$t('autonomous.selectSitePlaceholder')"
             />
           </div>
           <div>
-            <label class="eyebrow mb-1 block">Częstotliwość</label>
+            <label class="eyebrow mb-1 block">{{ $t('autonomous.frequencyLabel') }}</label>
             <USelect v-model="planFrequency" :items="frequencyOptions" />
           </div>
           <div class="min-w-40">
-            <label class="eyebrow mb-1 block">Ton</label>
+            <label class="eyebrow mb-1 block">{{ $t('autonomous.toneLabel') }}</label>
             <UInput v-model="planTone" placeholder="profesjonalny" />
           </div>
-          <UButton type="submit" icon="i-lucide-calendar-plus" color="neutral" :disabled="!planSiteId">Utwórz plan</UButton>
+          <UButton type="submit" icon="i-lucide-calendar-plus" color="neutral" :disabled="!planSiteId">{{ $t('autonomous.createPlan') }}</UButton>
         </form>
 
         <AppEmptyState
           v-if="(plans?.length ?? 0) === 0"
           icon="i-lucide-calendar-clock"
-          title="Brak planów"
-          description="Utwórz plan dla gotowej strony, aby AI zaczęło proponować szkice."
+          :title="$t('autonomous.plansEmptyTitle')"
+          :description="$t('autonomous.plansEmptyDescription')"
         />
 
         <table v-else class="w-full text-sm">
           <thead>
             <tr class="text-left" style="color: var(--muted)">
-              <th class="py-2">Status</th>
-              <th class="py-2">Częstotliwość</th>
-              <th class="py-2">Następne uruchomienie</th>
-              <th class="py-2 text-right">Uruchomień</th>
-              <th class="py-2 text-right">Akcja</th>
+              <th class="py-2">{{ $t('posts.colStatus') }}</th>
+              <th class="py-2">{{ $t('autonomous.frequencyLabel') }}</th>
+              <th class="py-2">{{ $t('autonomous.nextRun') }}</th>
+              <th class="py-2 text-right">{{ $t('autonomous.runCount') }}</th>
+              <th class="py-2 text-right">{{ $t('autonomous.action') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="plan in plans" :key="plan.id" style="border-top: 1px solid var(--hairline-soft)">
               <td class="py-3">
                 <UBadge :color="plan.status === 'active' ? 'success' : 'neutral'" variant="subtle">
-                  {{ plan.status === 'active' ? 'aktywny' : 'wstrzymany' }}
+                  {{ plan.status === 'active' ? $t('autonomous.planStatus.active') : $t('autonomous.planStatus.paused') }}
                 </UBadge>
               </td>
-              <td class="py-3">{{ plan.frequency === 'daily' ? 'codziennie' : 'co tydzień' }}</td>
+              <td class="py-3">{{ plan.frequency === 'daily' ? $t('autonomous.frequencyCell.daily') : $t('autonomous.frequencyCell.weekly') }}</td>
               <td class="py-3 tabular-nums">{{ plDateTime(plan.next_run_at) }}</td>
               <td class="py-3 text-right tabular-nums">{{ plan.run_count }}</td>
               <td class="py-3 text-right">
                 <UButton size="xs" color="neutral" variant="ghost" @click="togglePlan(plan)">
-                  {{ plan.status === 'active' ? 'Wstrzymaj' : 'Wznów' }}
+                  {{ plan.status === 'active' ? $t('autonomous.pause') : $t('autonomous.resume') }}
                 </UButton>
               </td>
             </tr>
@@ -232,12 +234,12 @@ function plDateTime(iso: string | null): string {
 
       <!-- Proposals -->
       <section class="u-card p-6">
-        <h2 class="card-title mb-4">Propozycje</h2>
+        <h2 class="card-title mb-4">{{ $t('autonomous.proposalsTitle') }}</h2>
         <AppEmptyState
           v-if="(proposals?.length ?? 0) === 0"
           icon="i-lucide-file-pen"
-          title="Brak propozycji"
-          description="Gdy plan się uruchomi, wygenerowane szkice pojawią się tutaj jako drafty do akceptacji."
+          :title="$t('autonomous.proposalsEmptyTitle')"
+          :description="$t('autonomous.proposalsEmptyDescription')"
         />
         <ul v-else class="space-y-2">
           <li
@@ -251,7 +253,7 @@ function plDateTime(iso: string | null): string {
               <p class="text-xs" style="color: var(--muted-soft)">{{ plDateTime(proposal.created_at) }}</p>
             </div>
             <UButton :to="`/posts/${proposal.post_id}`" size="sm" color="neutral" variant="outline" icon="i-lucide-pencil">
-              Otwórz szkic
+              {{ $t('autonomous.openDraft') }}
             </UButton>
           </li>
         </ul>

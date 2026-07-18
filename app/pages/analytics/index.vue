@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import type { AnalyticsOverview, AnalyticsPostRow } from '~~/shared/types/api'
 
-useHead({ title: 'Analityka — Shoot SEO' })
+const { t, locale } = useI18n()
+useHead({ title: () => t('analytics.pageTitle') })
 
 const { current } = useWorkspace()
 const { fetchOverview, fetchTopPosts } = useAnalytics()
 
-const PRESETS = [
-  { days: 7, label: '7 dni' },
-  { days: 28, label: '28 dni' },
-  { days: 90, label: '90 dni' },
-]
+const PRESETS = computed(() => [
+  { days: 7, label: t('analytics.range7d') },
+  { days: 28, label: t('analytics.range28d') },
+  { days: 90, label: t('analytics.range90d') },
+])
 
 const rangeDays = ref(28)
 const range = computed(() => lastNDaysRange(rangeDays.value))
@@ -49,12 +50,12 @@ function plDate(iso: string): string {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Analityka"
-      title="Analityka"
-      description="Ruch i zaangażowanie dla treści opublikowanych w tym workspace."
+      :eyebrow="$t('nav.analytics')"
+      :title="$t('nav.analytics')"
+      :description="$t('analytics.description')"
     >
       <template #actions>
-        <div class="seg" role="group" aria-label="Zakres dat">
+        <div class="seg" role="group" :aria-label="$t('analytics.rangeAriaLabel')">
           <button
             v-for="preset in PRESETS"
             :key="preset.days"
@@ -76,11 +77,11 @@ function plDate(iso: string): string {
     <AppEmptyState
       v-else-if="!hasData"
       icon="i-lucide-chart-line"
-      title="Brak danych analitycznych"
-      description="Gdy Twoje opublikowane treści zaczną zbierać ruch, pojawią się tu wyświetlenia, unikalni użytkownicy i czas zaangażowania."
+      :title="$t('analytics.emptyTitle')"
+      :description="$t('analytics.emptyDescription')"
     >
       <template #action>
-        <UButton to="/posts" icon="i-lucide-file-text" color="neutral" variant="outline">Przejdź do treści</UButton>
+        <UButton to="/posts" icon="i-lucide-file-text" color="neutral" variant="outline">{{ $t('analytics.goToPosts') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -93,7 +94,7 @@ function plDate(iso: string): string {
 
       <section class="u-card p-6">
         <div class="mb-4 flex items-baseline justify-between gap-4">
-          <h2 class="card-title">Dzienny ruch</h2>
+          <h2 class="card-title">{{ $t('analytics.dailyTraffic') }}</h2>
           <span class="text-xs" style="color: var(--muted-soft)">{{ plDate(range.from) }} — {{ plDate(range.to) }}</span>
         </div>
         <AppAnalyticsChart :series="overview?.series ?? []" />
@@ -101,20 +102,20 @@ function plDate(iso: string): string {
 
       <section class="u-card overflow-hidden">
         <div class="px-6 py-5" style="border-bottom: 1px solid var(--hairline)">
-          <h2 class="card-title">Top posty</h2>
+          <h2 class="card-title">{{ $t('analytics.topPosts') }}</h2>
         </div>
 
         <div v-if="(topPosts?.length ?? 0) === 0" class="px-6 py-12 text-center text-sm" style="color: var(--muted-soft)">
-          Brak wyświetleń w tym okresie.
+          {{ $t('analytics.noViewsInRange') }}
         </div>
 
         <table v-else class="analytics-table w-full">
           <thead>
             <tr>
-              <th class="text-left">Tytuł</th>
-              <th class="text-right">Wyświetlenia</th>
-              <th class="text-right">Unikalni</th>
-              <th class="text-right">Śr. czas</th>
+              <th class="text-left">{{ $t('posts.colTitle') }}</th>
+              <th class="text-right">{{ $t('analytics.colViews') }}</th>
+              <th class="text-right">{{ $t('analytics.colUniques') }}</th>
+              <th class="text-right">{{ $t('analytics.colAvgTime') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -125,8 +126,8 @@ function plDate(iso: string): string {
                   <span class="block truncate text-xs" style="color: var(--muted-soft)">/{{ post.slug }}</span>
                 </NuxtLink>
               </td>
-              <td class="text-right tabular-nums">{{ formatCount(post.views) }}</td>
-              <td class="text-right tabular-nums">{{ formatCount(post.uniques) }}</td>
+              <td class="text-right tabular-nums">{{ formatCount(post.views, locale) }}</td>
+              <td class="text-right tabular-nums">{{ formatCount(post.uniques, locale) }}</td>
               <td class="text-right tabular-nums">{{ formatEngagement(post.avg_engagement_ms) }}</td>
             </tr>
           </tbody>

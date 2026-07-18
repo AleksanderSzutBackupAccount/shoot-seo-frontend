@@ -14,15 +14,17 @@ const props = withDefaults(defineProps<{
 
 const { create, update, schedule, publish, unpublish } = usePosts()
 const toast = useToast()
+const { t, locale } = useI18n()
 
 type Action = 'save' | 'schedule' | 'publish' | 'unpublish'
 
 const schema = z.object({
-  title: z.string().min(1, 'Tytuł jest wymagany'),
+  title: z.string().min(1, t('editor.titleRequired')),
   slug: z.string().optional(),
   excerpt: z.string().optional(),
   content: z.string().optional(),
   main_image_url: z.string().nullable().optional(),
+  language: z.string().optional(),
   seo: z.object({
     meta_title: z.string().optional(),
     meta_description: z.string().optional(),
@@ -33,12 +35,25 @@ const schema = z.object({
 
 type FormState = z.output<typeof schema>
 
+// Fixed list matching the backend's `config('ai.languages')` (M4/M8).
+const contentLanguages: { label: string, value: string }[] = [
+  { label: 'Polski', value: 'pl' },
+  { label: 'English', value: 'en' },
+  { label: 'Deutsch', value: 'de' },
+  { label: 'Español', value: 'es' },
+  { label: 'Français', value: 'fr' },
+  { label: 'Italiano', value: 'it' },
+  { label: 'Nederlands', value: 'nl' },
+  { label: 'Português', value: 'pt' },
+]
+
 const form = reactive<FormState>({
   title: '',
   slug: '',
   excerpt: '',
   content: '',
   main_image_url: null,
+  language: 'pl',
   seo: {
     meta_title: '',
     meta_description: '',
@@ -73,6 +88,7 @@ watch(() => props.initial, (post) => {
   form.excerpt = post.excerpt ?? ''
   form.content = post.content ?? ''
   form.main_image_url = post.main_image_url
+  form.language = post.language ?? 'pl'
   form.seo.meta_title = post.seo?.meta_title ?? ''
   form.seo.meta_description = post.seo?.meta_description ?? ''
   form.seo.og_image_url = post.seo?.og_image_url ?? ''
@@ -117,14 +133,14 @@ function toDatetimeLocal(date: Date): string {
 
 function formatDate(value: string | null): string {
   if (!value) return '—'
-  return new Date(value).toLocaleString('pl-PL', { dateStyle: 'medium', timeStyle: 'short' })
+  return new Date(value).toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' })
 }
 
-const statusMeta: Record<PostStatus, { label: string, cls: string }> = {
-  draft: { label: 'Szkic', cls: 'chip--draft' },
-  scheduled: { label: 'Zaplanowany', cls: 'chip--scheduled' },
-  published: { label: 'Opublikowany', cls: 'chip--published' },
-}
+const statusMeta = computed<Record<PostStatus, { label: string, cls: string }>>(() => ({
+  draft: { label: t('common.statusDraft'), cls: 'chip--draft' },
+  scheduled: { label: t('common.statusScheduled'), cls: 'chip--scheduled' },
+  published: { label: t('common.statusPublished'), cls: 'chip--published' },
+}))
 
 // ---- Payload ----
 function buildPayload(): CreatePostPayload {
@@ -141,6 +157,7 @@ function buildPayload(): CreatePostPayload {
     excerpt: form.excerpt || null,
     content: form.content || '',
     main_image_url: form.main_image_url ?? null,
+    language: form.language || 'pl',
     seo: hasSeo ? seo : null,
   }
 }
@@ -180,10 +197,10 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
     }
 
     const messages: Record<Action, string> = {
-      save: props.mode === 'create' ? 'Utworzono szkic' : 'Zapisano zmiany',
-      schedule: 'Zaplanowano publikację',
-      publish: 'Opublikowano wpis',
-      unpublish: 'Cofnięto publikację',
+      save: props.mode === 'create' ? t('editor.createdDraftToast') : t('editor.savedChangesToast'),
+      schedule: t('editor.scheduledToast'),
+      publish: t('posts.publishedToast'),
+      unpublish: t('posts.unpublishedToast'),
     }
     toast.add({ title: messages[action], color: 'success' })
     await navigateTo('/posts')
@@ -217,12 +234,12 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
             color="neutral"
             variant="ghost"
             size="sm"
-            aria-label="Wróć do treści"
+            :aria-label="$t('posts.backToPosts')"
           />
-          <p class="eyebrow">{{ isCreate ? 'Nowy wpis' : 'Edytor treści' }}</p>
+          <p class="eyebrow">{{ isCreate ? $t('common.newPost') : $t('editor.editorEyebrow') }}</p>
         </div>
         <h1 class="page-title mt-2">
-          {{ isCreate ? 'Nowy wpis' : 'Edytuj wpis' }}
+          {{ isCreate ? $t('common.newPost') : $t('editor.editTitle') }}
         </h1>
       </div>
       <span
@@ -246,26 +263,30 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
       <!-- Main column -->
       <div class="space-y-6 lg:col-span-2">
         <section class="u-card p-6 sm:p-7">
-          <h2 class="card-title" style="font-size: 1.25rem">Podstawy</h2>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Tytuł, adres URL i krótka zajawka wpisu.</p>
+          <h2 class="card-title" style="font-size: 1.25rem">{{ $t('editor.basicsTitle') }}</h2>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.basicsDescription') }}</p>
           <div class="mt-5 space-y-4">
-            <UFormField label="Tytuł" name="title" required :ui="{ label: 'field-label' }">
-              <UInput v-model="form.title" size="lg" class="w-full" placeholder="Tytuł wpisu" />
+            <UFormField :label="$t('editor.titleLabel')" name="title" required :ui="{ label: 'field-label' }">
+              <UInput v-model="form.title" size="lg" class="w-full" :placeholder="$t('editor.titlePlaceholder')" />
             </UFormField>
 
-            <UFormField label="Slug" name="slug" help="Generowany z tytułu, edytowalny." :ui="{ label: 'field-label' }">
+            <UFormField :label="$t('editor.slugLabel')" name="slug" :help="$t('editor.slugHelp')" :ui="{ label: 'field-label' }">
               <UInput :model-value="form.slug" class="w-full" @update:model-value="onSlugInput" />
             </UFormField>
 
-            <UFormField label="Zajawka (excerpt)" name="excerpt" :ui="{ label: 'field-label' }">
+            <UFormField :label="$t('editor.excerptLabel')" name="excerpt" :ui="{ label: 'field-label' }">
               <UTextarea v-model="form.excerpt" :rows="2" autoresize class="w-full" />
+            </UFormField>
+
+            <UFormField :label="$t('post.contentLanguage')" name="language" :ui="{ label: 'field-label' }">
+              <USelect v-model="form.language" :items="contentLanguages" class="w-full" />
             </UFormField>
           </div>
         </section>
 
         <section class="u-card p-6 sm:p-7">
-          <h2 class="card-title" style="font-size: 1.25rem">Treść</h2>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Główna treść wpisu z formatowaniem i obrazami.</p>
+          <h2 class="card-title" style="font-size: 1.25rem">{{ $t('editor.contentTitle') }}</h2>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.contentDescription') }}</p>
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <AiActions
               :content="form.content ?? ''"
@@ -291,18 +312,18 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
         <section v-if="aiAnalysis" class="u-card p-6 sm:p-7">
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-sparkles" class="size-4" style="color: var(--muted)" />
-            <h2 class="card-title" style="font-size: 1.25rem">Analiza AI</h2>
+            <h2 class="card-title" style="font-size: 1.25rem">{{ $t('editor.aiAnalysisTitle') }}</h2>
           </div>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Czytelność: {{ aiAnalysis.analysis.readability.score }}/100</p>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.readabilityScore', { score: aiAnalysis.analysis.readability.score }) }}</p>
           <div class="mt-4 space-y-4">
             <div v-if="aiAnalysis.analysis.seo.issues.length">
-              <p class="field-label mb-1.5">Problemy SEO</p>
+              <p class="field-label mb-1.5">{{ $t('editor.seoIssuesTitle') }}</p>
               <ul class="list-inside list-disc space-y-1 text-sm" style="color: var(--body)">
                 <li v-for="issue in aiAnalysis.analysis.seo.issues" :key="issue">{{ issue }}</li>
               </ul>
             </div>
             <div v-if="aiAnalysis.analysis.gaps.length">
-              <p class="field-label mb-1.5">Luki treściowe</p>
+              <p class="field-label mb-1.5">{{ $t('editor.contentGapsTitle') }}</p>
               <ul class="list-inside list-disc space-y-1 text-sm" style="color: var(--body)">
                 <li v-for="gap in aiAnalysis.analysis.gaps" :key="gap">{{ gap }}</li>
               </ul>
@@ -315,7 +336,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
             <UIcon name="i-lucide-search" class="size-4" style="color: var(--muted)" />
             <h2 class="card-title" style="font-size: 1.25rem">SEO</h2>
           </div>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Metadane dla wyszukiwarek i mediów społecznościowych.</p>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.seoDescription') }}</p>
           <div class="mt-5 space-y-4">
             <UFormField label="Meta title" name="seo.meta_title" :ui="{ label: 'field-label' }">
               <UInput v-model="form.seo.meta_title" class="w-full" />
@@ -336,7 +357,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
       <!-- Sidebar -->
       <div class="space-y-6">
         <section class="u-card p-6">
-          <h2 class="card-title" style="font-size: 1.25rem">Publikacja</h2>
+          <h2 class="card-title" style="font-size: 1.25rem">{{ $t('editor.publicationTitle') }}</h2>
 
           <div
             v-if="!isCreate"
@@ -344,11 +365,11 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
             style="border-bottom: 1px solid var(--hairline)"
           >
             <div class="flex items-center justify-between gap-2 text-sm">
-              <span style="color: var(--muted)">Zaplanowano</span>
+              <span style="color: var(--muted)">{{ $t('editor.scheduledLabel') }}</span>
               <span style="color: var(--ink)">{{ formatDate(scheduledAt) }}</span>
             </div>
             <div class="flex items-center justify-between gap-2 text-sm">
-              <span style="color: var(--muted)">Opublikowano</span>
+              <span style="color: var(--muted)">{{ $t('editor.publishedLabel') }}</span>
               <span style="color: var(--ink)">{{ formatDate(publishedAt) }}</span>
             </div>
           </div>
@@ -361,7 +382,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
               :loading="loading && pendingAction === 'save'"
               @click="trigger('save')"
             >
-              {{ isCreate ? 'Zapisz szkic' : 'Zapisz zmiany' }}
+              {{ isCreate ? $t('editor.saveDraft') : $t('editor.saveChanges') }}
             </UButton>
 
             <UButton
@@ -373,7 +394,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
               :loading="loading && pendingAction === 'schedule'"
               @click="openSchedule"
             >
-              {{ status === 'scheduled' ? 'Zmień termin' : 'Zaplanuj publikację' }}
+              {{ status === 'scheduled' ? $t('editor.changeSchedule') : $t('editor.scheduleAction') }}
             </UButton>
 
             <UButton
@@ -385,7 +406,7 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
               :loading="loading && pendingAction === 'publish'"
               @click="trigger('publish')"
             >
-              Opublikuj teraz
+              {{ $t('editor.publishNow') }}
             </UButton>
 
             <UButton
@@ -397,20 +418,20 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
               :loading="loading && pendingAction === 'unpublish'"
               @click="trigger('unpublish')"
             >
-              Cofnij do szkicu
+              {{ $t('editor.revertToDraft') }}
             </UButton>
           </div>
         </section>
 
         <PostDistributionPicker v-if="!isCreate" :post-id="(props.id as string)" />
         <section v-else class="u-card p-6">
-          <h2 class="card-title" style="font-size: 1.25rem">Dystrybucja</h2>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Zapisz post, aby wybrać kanały dystrybucji.</p>
+          <h2 class="card-title" style="font-size: 1.25rem">{{ $t('distribution.title') }}</h2>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.distributionHint') }}</p>
         </section>
 
         <section class="u-card p-6">
-          <h2 class="card-title" style="font-size: 1.25rem">Obraz główny</h2>
-          <p class="mt-1 text-sm" style="color: var(--muted)">Wyświetlany na liście wpisów i w nagłówku.</p>
+          <h2 class="card-title" style="font-size: 1.25rem">{{ $t('editor.mainImageTitle') }}</h2>
+          <p class="mt-1 text-sm" style="color: var(--muted)">{{ $t('editor.mainImageDescription') }}</p>
           <UFormField name="main_image_url" class="mt-4">
             <MediaPicker v-model="form.main_image_url" label="" />
           </UFormField>
@@ -419,16 +440,16 @@ async function onSubmit(_event: FormSubmitEvent<FormState>) {
     </div>
 
     <!-- Schedule modal -->
-    <UModal v-model:open="showScheduleModal" title="Zaplanuj publikację">
+    <UModal v-model:open="showScheduleModal" :title="$t('editor.scheduleAction')">
       <template #body>
-        <UFormField label="Data i godzina publikacji" :ui="{ label: 'field-label' }">
+        <UFormField :label="$t('editor.scheduleDateLabel')" :ui="{ label: 'field-label' }">
           <UInput v-model="scheduleAt" type="datetime-local" class="w-full" />
         </UFormField>
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" @click="showScheduleModal = false">Anuluj</UButton>
-          <UButton color="neutral" icon="i-lucide-calendar-check" @click="confirmSchedule">Zaplanuj</UButton>
+          <UButton color="neutral" variant="ghost" @click="showScheduleModal = false">{{ $t('common.cancel') }}</UButton>
+          <UButton color="neutral" icon="i-lucide-calendar-check" @click="confirmSchedule">{{ $t('editor.confirmSchedule') }}</UButton>
         </div>
       </template>
     </UModal>

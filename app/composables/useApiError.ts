@@ -17,11 +17,12 @@ export interface ParsedApiError {
  */
 export function parseApiError(error: unknown): ParsedApiError {
   const data = (error as { data?: ValidationErrorBody })?.data
+  const { $i18n } = useNuxtApp()
   const message
     = data?.message
       || (error as { statusMessage?: string })?.statusMessage
       || (error as Error)?.message
-      || 'Wystąpił nieoczekiwany błąd.'
+      || $i18n.t('common.unexpectedError')
 
   const fieldErrors: ApiFieldError[] = []
   if (data?.errors) {

@@ -2,10 +2,10 @@
 const route = useRoute()
 
 const tabs = [
-  { label: 'Klucze API', icon: 'i-lucide-key-round', to: '/settings/api-keys' },
-  { label: 'Webhooki', icon: 'i-lucide-webhook', to: '/settings/webhooks' },
-  { label: 'Kanały', icon: 'i-lucide-share-2', to: '/settings/channels' },
-  { label: 'Plan i płatności', icon: 'i-lucide-credit-card', to: '/settings/billing' },
+  { labelKey: 'shell.settingsApiKeys', icon: 'i-lucide-key-round', to: '/settings/api-keys' },
+  { labelKey: 'shell.settingsWebhooks', icon: 'i-lucide-webhook', to: '/settings/webhooks' },
+  { labelKey: 'shell.settingsChannels', icon: 'i-lucide-share-2', to: '/settings/channels' },
+  { labelKey: 'shell.settingsBilling', icon: 'i-lucide-credit-card', to: '/settings/billing' },
 ]
 
 function isActive(to: string) {
@@ -23,7 +23,7 @@ function isActive(to: string) {
       :class="{ 'settings-tab--active': isActive(tab.to) }"
     >
       <UIcon :name="tab.icon" class="size-4 shrink-0" />
-      <span>{{ tab.label }}</span>
+      <span>{{ $t(tab.labelKey) }}</span>
     </NuxtLink>
   </div>
 </template>

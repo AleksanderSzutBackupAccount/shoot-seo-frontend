@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Webhook } from '~~/shared/types/api'
 
-useHead({ title: 'Webhooki — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('settings.webhooks.pageTitle') })
 
 const { current } = useWorkspace()
 const { list, remove } = useWebhooks()
@@ -19,19 +20,19 @@ const deliveriesTarget = ref<Webhook | null>(null)
 const removeTarget = ref<Webhook | null>(null)
 const removing = ref(false)
 
-const columns: TableColumn<Webhook>[] = [
-  { accessorKey: 'url', header: 'Adres URL' },
-  { id: 'events', header: 'Zdarzenia' },
-  { accessorKey: 'active', header: 'Status' },
+const columns = computed<TableColumn<Webhook>[]>(() => [
+  { accessorKey: 'url', header: t('common.urlLabel') },
+  { id: 'events', header: t('settings.webhooks.colEvents') },
+  { accessorKey: 'active', header: t('posts.colStatus') },
   { id: 'actions', header: '' },
-]
+])
 
 async function confirmRemove() {
   if (!removeTarget.value) return
   removing.value = true
   try {
     await remove(removeTarget.value.id)
-    toast.add({ title: 'Webhook usunięty', color: 'success' })
+    toast.add({ title: t('settings.webhooks.toastRemoved'), color: 'success' })
     removeTarget.value = null
     await refresh()
   }
@@ -47,13 +48,13 @@ async function confirmRemove() {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Ustawienia"
-      title="Webhooki"
-      description="Powiadamiaj zewnętrzne systemy o publikacjach — wysyłamy podpisane zdarzenia POST na Twój adres."
+      :eyebrow="$t('nav.groupSettings')"
+      :title="$t('shell.settingsWebhooks')"
+      :description="$t('settings.webhooks.description')"
     >
       <template #actions>
         <UButton color="neutral" icon="i-lucide-plus" size="lg" @click="createOpen = true">
-          Dodaj webhook
+          {{ $t('settings.webhooks.create') }}
         </UButton>
       </template>
     </AppPageHeader>
@@ -67,11 +68,11 @@ async function confirmRemove() {
     <AppEmptyState
       v-else-if="(webhooks?.length ?? 0) === 0"
       icon="i-lucide-webhook"
-      title="Brak webhooków"
-      description="Dodaj pierwszy webhook, aby otrzymywać zdarzenia o publikacjach. Sekret podpisu pokażemy tylko raz."
+      :title="$t('settings.webhooks.emptyTitle')"
+      :description="$t('settings.webhooks.emptyDescription')"
     >
       <template #action>
-        <UButton color="neutral" icon="i-lucide-plus" @click="createOpen = true">Dodaj webhook</UButton>
+        <UButton color="neutral" icon="i-lucide-plus" @click="createOpen = true">{{ $t('settings.webhooks.create') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -94,7 +95,7 @@ async function confirmRemove() {
 
         <template #active-cell="{ row }">
           <span class="chip" :class="row.original.active ? 'chip--published' : 'chip--draft'">
-            {{ row.original.active ? 'Aktywny' : 'Wstrzymany' }}
+            {{ row.original.active ? $t('settings.webhooks.statusActive') : $t('settings.webhooks.statusPaused') }}
           </span>
         </template>
 
@@ -107,14 +108,14 @@ async function confirmRemove() {
               size="sm"
               @click="deliveriesTarget = row.original"
             >
-              Dostawy
+              {{ $t('settings.webhooks.deliveries') }}
             </UButton>
             <UButton
               icon="i-lucide-trash-2"
               color="neutral"
               variant="ghost"
               size="sm"
-              aria-label="Usuń webhook"
+              :aria-label="$t('settings.webhooks.removeAria')"
               @click="removeTarget = row.original"
             />
           </div>
@@ -127,14 +128,14 @@ async function confirmRemove() {
 
     <UModal
       :open="removeTarget !== null"
-      title="Usunąć webhook?"
-      :description="`Przestaniemy wysyłać zdarzenia na ${removeTarget?.url}. Tej operacji nie można cofnąć.`"
+      :title="$t('settings.webhooks.removeModalTitle')"
+      :description="$t('settings.webhooks.removeModalDescription', { url: removeTarget?.url ?? '' })"
       @update:open="(value: boolean) => { if (!value) removeTarget = null }"
     >
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" @click="removeTarget = null">Anuluj</UButton>
-          <UButton color="error" :loading="removing" @click="confirmRemove">Usuń</UButton>
+          <UButton color="neutral" variant="ghost" @click="removeTarget = null">{{ $t('common.cancel') }}</UButton>
+          <UButton color="error" :loading="removing" @click="confirmRemove">{{ $t('common.delete') }}</UButton>
         </div>
       </template>
     </UModal>

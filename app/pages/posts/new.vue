@@ -1,5 +1,6 @@
 <script setup lang="ts">
-useHead({ title: 'Nowy wpis — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('posts.newPageTitle') })
 </script>
 
 <template>

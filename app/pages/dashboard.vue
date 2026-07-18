@@ -1,5 +1,6 @@
 <script setup lang="ts">
-useHead({ title: 'Pulpit — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('dashboard.pageTitle') })
 
 const { user } = useAuth()
 const { current } = useWorkspace()
@@ -25,27 +26,27 @@ const stats = computed(() => {
 
 const recent = computed(() => (posts.value ?? []).slice(0, 5))
 
-const statusMeta: Record<string, { label: string, cls: string }> = {
-  published: { label: 'Opublikowany', cls: 'chip--published' },
-  scheduled: { label: 'Zaplanowany', cls: 'chip--scheduled' },
-  draft: { label: 'Szkic', cls: 'chip--draft' },
-}
+const statusMeta = computed<Record<string, { label: string, cls: string }>>(() => ({
+  published: { label: t('common.statusPublished'), cls: 'chip--published' },
+  scheduled: { label: t('common.statusScheduled'), cls: 'chip--scheduled' },
+  draft: { label: t('common.statusDraft'), cls: 'chip--draft' },
+}))
 
 const greeting = computed(() => {
   const n = user.value?.name?.split(' ')[0]
-  return n ? `Dzień dobry, ${n}` : 'Dzień dobry'
+  return n ? t('dashboard.greetingName', { name: n }) : t('dashboard.greeting')
 })
 </script>
 
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Pulpit"
+      :eyebrow="$t('dashboard.eyebrow')"
       :title="greeting"
-      description="Przegląd Twojej przestrzeni treści — twórz, planuj i publikuj w jednym miejscu."
+      :description="$t('dashboard.description')"
     >
       <template #actions>
-        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">Nowy wpis</UButton>
+        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">{{ $t('common.newPost') }}</UButton>
       </template>
     </AppPageHeader>
 
@@ -54,30 +55,30 @@ const greeting = computed(() => {
       <div class="relative overflow-hidden rounded-2xl p-7 lg:row-span-1" style="background: var(--canvas-soft); border: 1px solid var(--hairline)">
         <AppGradientOrbs variant="corner" />
         <div class="relative z-10">
-          <p class="eyebrow">Aktywny workspace</p>
+          <p class="eyebrow">{{ $t('dashboard.activeWorkspace') }}</p>
           <p class="card-title mt-3">{{ current?.name ?? '—' }}</p>
           <div v-if="current" class="mt-4">
-            <span class="badge-pill">{{ current.role === 'admin' ? 'Administrator' : 'Użytkownik' }}</span>
+            <span class="badge-pill">{{ current.role === 'admin' ? $t('dashboard.roleAdmin') : $t('dashboard.roleUser') }}</span>
           </div>
         </div>
       </div>
 
       <div class="u-card u-card--hover p-7">
-        <p class="eyebrow">Treści</p>
+        <p class="eyebrow">{{ $t('dashboard.contentEyebrow') }}</p>
         <p class="font-display mt-4 leading-none" style="font-size: 2.75rem; color: var(--ink)">{{ stats.total }}</p>
-        <p class="mt-2 text-sm" style="color: var(--muted)">wszystkich wpisów</p>
+        <p class="mt-2 text-sm" style="color: var(--muted)">{{ $t('dashboard.totalPostsLabel') }}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-5">
         <div class="u-card u-card--hover p-6">
           <p class="eyebrow">Live</p>
           <p class="font-display mt-3 leading-none" style="font-size: 2.25rem; color: var(--ink)">{{ stats.published }}</p>
-          <p class="mt-2 text-sm" style="color: var(--muted)">opublikowane</p>
+          <p class="mt-2 text-sm" style="color: var(--muted)">{{ $t('dashboard.publishedLabel') }}</p>
         </div>
         <div class="u-card u-card--hover p-6">
-          <p class="eyebrow">Kolejka</p>
+          <p class="eyebrow">{{ $t('dashboard.queueEyebrow') }}</p>
           <p class="font-display mt-3 leading-none" style="font-size: 2.25rem; color: var(--ink)">{{ stats.scheduled }}</p>
-          <p class="mt-2 text-sm" style="color: var(--muted)">zaplanowane</p>
+          <p class="mt-2 text-sm" style="color: var(--muted)">{{ $t('dashboard.scheduledLabel') }}</p>
         </div>
       </div>
     </div>
@@ -86,8 +87,8 @@ const greeting = computed(() => {
     <div class="mt-5 grid gap-5 lg:grid-cols-3">
       <div class="u-card overflow-hidden lg:col-span-2">
         <div class="flex items-center justify-between px-6 py-5" style="border-bottom: 1px solid var(--hairline)">
-          <h2 style="font-weight: 600; color: var(--ink)">Ostatnie treści</h2>
-          <UButton to="/posts" variant="link" color="neutral" trailing-icon="i-lucide-arrow-right" size="sm">Wszystkie</UButton>
+          <h2 style="font-weight: 600; color: var(--ink)">{{ $t('dashboard.recentTitle') }}</h2>
+          <UButton to="/posts" variant="link" color="neutral" trailing-icon="i-lucide-arrow-right" size="sm">{{ $t('dashboard.viewAll') }}</UButton>
         </div>
 
         <div v-if="recent.length" class="divide-y" style="--tw-divide-opacity: 1">
@@ -104,35 +105,35 @@ const greeting = computed(() => {
         </div>
 
         <div v-else class="px-6 py-14 text-center">
-          <p class="card-title" style="font-size: 1.25rem">Jeszcze pusto</p>
+          <p class="card-title" style="font-size: 1.25rem">{{ $t('common.emptyTitle') }}</p>
           <p class="mx-auto mt-2 max-w-sm text-[15px]" style="color: var(--muted)">
-            Zacznij od pierwszego wpisu — z asystą AI napiszesz go w kilka minut.
+            {{ $t('dashboard.emptyDescription') }}
           </p>
-          <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" class="mt-5">Utwórz wpis</UButton>
+          <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" class="mt-5">{{ $t('common.createPost') }}</UButton>
         </div>
       </div>
 
       <div class="u-card p-6">
-        <h2 class="mb-4" style="font-weight: 600; color: var(--ink)">Szybkie akcje</h2>
+        <h2 class="mb-4" style="font-weight: 600; color: var(--ink)">{{ $t('dashboard.quickActionsTitle') }}</h2>
         <div class="flex flex-col gap-2.5">
           <NuxtLink to="/posts/new" class="quick-action">
             <UIcon name="i-lucide-pen-line" class="size-[18px]" />
-            <span>Napisz nowy wpis</span>
+            <span>{{ $t('dashboard.quickActionWrite') }}</span>
             <UIcon name="i-lucide-arrow-up-right" class="ml-auto size-4 opacity-40" />
           </NuxtLink>
           <NuxtLink to="/calendar" class="quick-action">
             <UIcon name="i-lucide-calendar-days" class="size-[18px]" />
-            <span>Zaplanuj publikacje</span>
+            <span>{{ $t('dashboard.quickActionSchedule') }}</span>
             <UIcon name="i-lucide-arrow-up-right" class="ml-auto size-4 opacity-40" />
           </NuxtLink>
           <NuxtLink to="/media" class="quick-action">
             <UIcon name="i-lucide-image" class="size-[18px]" />
-            <span>Biblioteka mediów</span>
+            <span>{{ $t('dashboard.quickActionMedia') }}</span>
             <UIcon name="i-lucide-arrow-up-right" class="ml-auto size-4 opacity-40" />
           </NuxtLink>
           <NuxtLink to="/members" class="quick-action">
             <UIcon name="i-lucide-user-plus" class="size-[18px]" />
-            <span>Zaproś współpracownika</span>
+            <span>{{ $t('dashboard.quickActionInvite') }}</span>
             <UIcon name="i-lucide-arrow-up-right" class="ml-auto size-4 opacity-40" />
           </NuxtLink>
         </div>

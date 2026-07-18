@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { CalendarEntry, Channel, Publication } from '~~/shared/types/api'
 
-useHead({ title: 'Kalendarz — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: () => t('calendar.pageTitle') })
 
 const { current } = useWorkspace()
 const { fetchCalendar } = usePosts()
@@ -56,12 +57,12 @@ const publicationsByPost = computed(() => {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Planer"
-      title="Kalendarz publikacji"
-      :description="`Planuj i przeglądaj harmonogram treści workspace „${current?.name ?? '—'}”.`"
+      :eyebrow="$t('calendar.eyebrow')"
+      :title="$t('calendar.title')"
+      :description="$t('calendar.description', { workspace: current?.name ?? '—' })"
     >
       <template #actions>
-        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">Nowy wpis</UButton>
+        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">{{ $t('common.newPost') }}</UButton>
       </template>
     </AppPageHeader>
 

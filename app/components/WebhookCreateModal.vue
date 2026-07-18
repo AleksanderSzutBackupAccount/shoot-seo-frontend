@@ -7,14 +7,15 @@ const open = defineModel<boolean>('open', { default: false })
 const emit = defineEmits<{ created: [] }>()
 
 const { create } = useWebhooks()
+const { t } = useI18n()
 
-const EVENTS: { value: string, hint: string }[] = [
-  { value: 'post.published', hint: 'Wysyłane po opublikowaniu wpisu.' },
-  { value: 'post.unpublished', hint: 'Wysyłane po cofnięciu publikacji wpisu.' },
-]
+const EVENTS = computed<{ value: string, hint: string }[]>(() => [
+  { value: 'post.published', hint: t('settings.webhooks.eventPublishedHint') },
+  { value: 'post.unpublished', hint: t('settings.webhooks.eventUnpublishedHint') },
+])
 
 const schema = z.object({
-  url: z.string().url('Podaj poprawny adres URL (https://…)'),
+  url: z.string().url(t('common.invalidUrl')),
 })
 type Schema = z.output<typeof schema>
 
@@ -29,11 +30,11 @@ const serverError = ref<string | null>(null)
 const createdWebhook = ref<Webhook | null>(null)
 const secret = ref<string | null>(null)
 
-const title = computed(() => (createdWebhook.value ? 'Webhook dodany' : 'Nowy webhook'))
+const title = computed(() => (createdWebhook.value ? t('settings.webhooks.createdTitle') : t('settings.webhooks.createTitle')))
 const description = computed(() =>
   createdWebhook.value
-    ? 'Zapisz sekret podpisu — zobaczysz go tylko teraz.'
-    : 'Wyślemy zdarzenia POST-em na podany adres, podpisane sekretem HMAC.')
+    ? t('settings.webhooks.createdDescription')
+    : t('settings.webhooks.createDescription'))
 
 function reset() {
   state.url = ''
@@ -58,7 +59,7 @@ function toggleEvent(value: string, checked: boolean) {
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   if (!selectedEvents.value.length) {
-    eventsError.value = 'Wybierz co najmniej jedno zdarzenie.'
+    eventsError.value = t('settings.webhooks.eventsRequired')
     return
   }
   loading.value = true
@@ -91,7 +92,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           </div>
           <p class="min-w-0 truncate font-mono text-sm" style="color: var(--ink)">{{ createdWebhook.url }}</p>
         </div>
-        <RevealSecret :value="secret" label="Sekret podpisu (HMAC)" />
+        <RevealSecret :value="secret" :label="$t('settings.webhooks.secretLabel')" />
       </div>
 
       <!-- Create form -->
@@ -106,11 +107,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         />
 
         <UForm ref="form" :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
-          <UFormField label="Adres URL" name="url" help="Punkt końcowy, który odbierze zdarzenia.">
-            <UInput v-model="state.url" type="url" placeholder="https://twoja-strona.pl/webhooks/shoot-seo" icon="i-lucide-link" size="lg" class="w-full" />
+          <UFormField :label="$t('common.urlLabel')" name="url" :help="$t('settings.webhooks.urlHelp')">
+            <UInput v-model="state.url" type="url" :placeholder="$t('settings.webhooks.urlPlaceholder')" icon="i-lucide-link" size="lg" class="w-full" />
           </UFormField>
 
-          <UFormField label="Zdarzenia" name="events" :error="eventsError ?? undefined">
+          <UFormField :label="$t('settings.webhooks.colEvents')" name="events" :error="eventsError ?? undefined">
             <div class="flex flex-col gap-3">
               <UCheckbox
                 v-for="ev in EVENTS"
@@ -130,11 +131,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <template #footer>
       <div class="flex w-full justify-end gap-2">
         <template v-if="createdWebhook">
-          <UButton color="neutral" icon="i-lucide-check" @click="open = false">Gotowe</UButton>
+          <UButton color="neutral" icon="i-lucide-check" @click="open = false">{{ $t('common.done') }}</UButton>
         </template>
         <template v-else>
-          <UButton color="neutral" variant="ghost" @click="open = false">Anuluj</UButton>
-          <UButton color="neutral" :loading="loading" icon="i-lucide-plus" @click="form?.submit()">Dodaj webhook</UButton>
+          <UButton color="neutral" variant="ghost" @click="open = false">{{ $t('common.cancel') }}</UButton>
+          <UButton color="neutral" :loading="loading" icon="i-lucide-plus" @click="form?.submit()">{{ $t('settings.webhooks.create') }}</UButton>
         </template>
       </div>
     </template>

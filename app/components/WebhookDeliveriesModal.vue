@@ -6,6 +6,7 @@ const emit = defineEmits<{ close: [] }>()
 
 const { deliveries } = useWebhooks()
 const toast = useToast()
+const { t, locale } = useI18n()
 
 const rows = ref<WebhookDelivery[]>([])
 const loading = ref(false)
@@ -34,30 +35,31 @@ watch(() => props.webhook, async (webhook) => {
 
 function formatDate(value: string | null): string {
   if (!value) return '—'
-  return new Date(value).toLocaleString('pl-PL', { dateStyle: 'medium', timeStyle: 'short' })
+  return new Date(value).toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' })
 }
 
 function statusMeta(delivery: WebhookDelivery): { label: string, cls: string } {
-  if (delivery.response_status === null) return { label: 'Oczekuje', cls: 'chip--draft' }
+  if (delivery.response_status === null) return { label: t('settings.webhooks.deliveryPending'), cls: 'chip--draft' }
   if (delivery.response_status >= 200 && delivery.response_status < 300) {
     return { label: String(delivery.response_status), cls: 'chip--published' }
   }
   return { label: String(delivery.response_status), cls: 'chip--fail' }
 }
 
+/** Polish grammatical number agreement for "attempt(s)" (1 / 2–4 / 5+, with the 12–14 exception). */
 function attemptsLabel(n: number): string {
   const mod10 = n % 10
   const mod100 = n % 100
-  if (n === 1) return 'próba'
-  if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) return 'próby'
-  return 'prób'
+  if (n === 1) return t('settings.webhooks.attemptOne')
+  if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) return t('settings.webhooks.attemptFew')
+  return t('settings.webhooks.attemptMany')
 }
 </script>
 
 <template>
   <UModal
     v-model:open="isOpen"
-    title="Dostawy webhooka"
+    :title="$t('settings.webhooks.deliveriesModalTitle')"
     :description="webhook?.url"
     :ui="{ content: 'sm:max-w-lg' }"
   >
@@ -70,9 +72,9 @@ function attemptsLabel(n: number): string {
         <div class="surface-strong mx-auto mb-3 flex size-11 items-center justify-center rounded-full">
           <UIcon name="i-lucide-inbox" class="size-5" style="color: var(--muted)" />
         </div>
-        <p class="card-title" style="font-size: 1.15rem">Brak dostaw</p>
+        <p class="card-title" style="font-size: 1.15rem">{{ $t('settings.webhooks.deliveriesEmptyTitle') }}</p>
         <p class="mx-auto mt-1.5 max-w-xs text-sm" style="color: var(--muted)">
-          Zdarzenia pojawią się tutaj, gdy webhook zacznie odbierać publikacje.
+          {{ $t('settings.webhooks.deliveriesEmptyDescription') }}
         </p>
       </div>
 
@@ -97,7 +99,7 @@ function attemptsLabel(n: number): string {
 
     <template #footer>
       <div class="flex w-full justify-end">
-        <UButton color="neutral" variant="ghost" @click="emit('close')">Zamknij</UButton>
+        <UButton color="neutral" variant="ghost" @click="emit('close')">{{ $t('common.close') }}</UButton>
       </div>
     </template>
   </UModal>

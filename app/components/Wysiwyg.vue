@@ -8,6 +8,7 @@ const modelValue = defineModel<string>({ default: '' })
 
 const { upload } = useMedia()
 const toast = useToast()
+const { t } = useI18n()
 const uploading = ref(false)
 
 const editor = useEditor({
@@ -69,16 +70,16 @@ interface ToolbarButton {
 }
 
 const toolbar = computed<ToolbarButton[]>(() => [
-  { icon: 'i-lucide-bold', label: 'Pogrubienie', isActive: () => !!editor.value?.isActive('bold'), run: () => editor.value?.chain().focus().toggleBold().run() },
-  { icon: 'i-lucide-italic', label: 'Kursywa', isActive: () => !!editor.value?.isActive('italic'), run: () => editor.value?.chain().focus().toggleItalic().run() },
-  { icon: 'i-lucide-underline', label: 'Podkreślenie', isActive: () => !!editor.value?.isActive('underline'), run: () => editor.value?.chain().focus().toggleUnderline().run() },
-  { icon: 'i-lucide-strikethrough', label: 'Przekreślenie', isActive: () => !!editor.value?.isActive('strike'), run: () => editor.value?.chain().focus().toggleStrike().run() },
-  { icon: 'i-lucide-heading-2', label: 'Nagłówek H2', isActive: () => !!editor.value?.isActive('heading', { level: 2 }), run: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run() },
-  { icon: 'i-lucide-heading-3', label: 'Nagłówek H3', isActive: () => !!editor.value?.isActive('heading', { level: 3 }), run: () => editor.value?.chain().focus().toggleHeading({ level: 3 }).run() },
-  { icon: 'i-lucide-list', label: 'Lista punktowana', isActive: () => !!editor.value?.isActive('bulletList'), run: () => editor.value?.chain().focus().toggleBulletList().run() },
-  { icon: 'i-lucide-list-ordered', label: 'Lista numerowana', isActive: () => !!editor.value?.isActive('orderedList'), run: () => editor.value?.chain().focus().toggleOrderedList().run() },
-  { icon: 'i-lucide-quote', label: 'Cytat', isActive: () => !!editor.value?.isActive('blockquote'), run: () => editor.value?.chain().focus().toggleBlockquote().run() },
-  { icon: 'i-lucide-code', label: 'Blok kodu', isActive: () => !!editor.value?.isActive('codeBlock'), run: () => editor.value?.chain().focus().toggleCodeBlock().run() },
+  { icon: 'i-lucide-bold', label: t('editor.toolbarBold'), isActive: () => !!editor.value?.isActive('bold'), run: () => editor.value?.chain().focus().toggleBold().run() },
+  { icon: 'i-lucide-italic', label: t('editor.toolbarItalic'), isActive: () => !!editor.value?.isActive('italic'), run: () => editor.value?.chain().focus().toggleItalic().run() },
+  { icon: 'i-lucide-underline', label: t('editor.toolbarUnderline'), isActive: () => !!editor.value?.isActive('underline'), run: () => editor.value?.chain().focus().toggleUnderline().run() },
+  { icon: 'i-lucide-strikethrough', label: t('editor.toolbarStrike'), isActive: () => !!editor.value?.isActive('strike'), run: () => editor.value?.chain().focus().toggleStrike().run() },
+  { icon: 'i-lucide-heading-2', label: t('editor.toolbarH2'), isActive: () => !!editor.value?.isActive('heading', { level: 2 }), run: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run() },
+  { icon: 'i-lucide-heading-3', label: t('editor.toolbarH3'), isActive: () => !!editor.value?.isActive('heading', { level: 3 }), run: () => editor.value?.chain().focus().toggleHeading({ level: 3 }).run() },
+  { icon: 'i-lucide-list', label: t('editor.toolbarBulletList'), isActive: () => !!editor.value?.isActive('bulletList'), run: () => editor.value?.chain().focus().toggleBulletList().run() },
+  { icon: 'i-lucide-list-ordered', label: t('editor.toolbarOrderedList'), isActive: () => !!editor.value?.isActive('orderedList'), run: () => editor.value?.chain().focus().toggleOrderedList().run() },
+  { icon: 'i-lucide-quote', label: t('editor.toolbarQuote'), isActive: () => !!editor.value?.isActive('blockquote'), run: () => editor.value?.chain().focus().toggleBlockquote().run() },
+  { icon: 'i-lucide-code', label: t('editor.toolbarCodeBlock'), isActive: () => !!editor.value?.isActive('codeBlock'), run: () => editor.value?.chain().focus().toggleCodeBlock().run() },
 ])
 </script>
 
@@ -104,8 +105,8 @@ const toolbar = computed<ToolbarButton[]>(() => [
       <button
         type="button"
         class="wysiwyg__btn"
-        aria-label="Wstaw obraz"
-        title="Wstaw obraz"
+        :aria-label="$t('editor.toolbarInsertImage')"
+        :title="$t('editor.toolbarInsertImage')"
         :disabled="uploading"
         @click="addImage"
       >
@@ -121,8 +122,8 @@ const toolbar = computed<ToolbarButton[]>(() => [
       <button
         type="button"
         class="wysiwyg__btn"
-        aria-label="Cofnij"
-        title="Cofnij"
+        :aria-label="$t('editor.toolbarUndo')"
+        :title="$t('editor.toolbarUndo')"
         @click="editor?.chain().focus().undo().run()"
       >
         <UIcon name="i-lucide-undo-2" class="size-4" />
@@ -130,8 +131,8 @@ const toolbar = computed<ToolbarButton[]>(() => [
       <button
         type="button"
         class="wysiwyg__btn"
-        aria-label="Ponów"
-        title="Ponów"
+        :aria-label="$t('editor.toolbarRedo')"
+        :title="$t('editor.toolbarRedo')"
         @click="editor?.chain().focus().redo().run()"
       >
         <UIcon name="i-lucide-redo-2" class="size-4" />

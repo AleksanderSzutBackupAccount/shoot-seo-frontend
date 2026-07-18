@@ -3,17 +3,19 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Ustaw nowe hasło — Shoot SEO' })
+
+const { t } = useI18n()
+useHead({ title: t('auth.resetPageTitle') })
 
 const { resetPassword } = useAuth()
 const route = useRoute()
 
 const schema = z.object({
-  email: z.string().email('Nieprawidłowy adres e-mail'),
-  password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
-  password_confirmation: z.string().min(1, 'Potwierdź hasło'),
+  email: z.string().email(t('auth.invalidEmail')),
+  password: z.string().min(8, t('auth.passwordMinLength')),
+  password_confirmation: z.string().min(1, t('auth.confirmPasswordRequired')),
 }).refine(data => data.password === data.password_confirmation, {
-  message: 'Hasła nie są takie same',
+  message: t('auth.passwordMismatch'),
   path: ['password_confirmation'],
 })
 type Schema = z.output<typeof schema>
@@ -51,9 +53,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <div>
     <div class="mb-8">
-      <p class="eyebrow mb-3">Nowe hasło</p>
-      <h1 class="card-title">Ustaw nowe hasło</h1>
-      <p class="mt-2 text-[15px]" style="color: var(--muted)">Wpisz nowe hasło do swojego konta.</p>
+      <p class="eyebrow mb-3">{{ $t('auth.resetEyebrow') }}</p>
+      <h1 class="card-title">{{ $t('auth.resetTitle') }}</h1>
+      <p class="mt-2 text-[15px]" style="color: var(--muted)">{{ $t('auth.resetSubtitle') }}</p>
     </div>
 
     <UAlert
@@ -61,8 +63,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       color="success"
       variant="subtle"
       icon="i-lucide-check-circle"
-      title="Hasło zmienione"
-      :actions="[{ label: 'Przejdź do logowania', color: 'success', to: '/login' }]"
+      :title="$t('auth.passwordChangedTitle')"
+      :actions="[{ label: $t('auth.goToLogin'), color: 'success', to: '/login' }]"
     />
 
     <template v-else>
@@ -71,8 +73,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         color="warning"
         variant="subtle"
         icon="i-lucide-triangle-alert"
-        title="Brak tokenu resetu"
-        description="Otwórz link z wiadomości e-mail, aby zresetować hasło."
+        :title="$t('auth.noResetToken')"
+        :description="$t('auth.openEmailLink')"
         class="mb-5"
       />
       <UAlert
@@ -85,21 +87,21 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       />
 
       <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormField label="E-mail" name="email">
+        <UFormField :label="$t('auth.emailLabel')" name="email">
           <UInput v-model="state.email" type="email" icon="i-lucide-mail" class="w-full" />
         </UFormField>
-        <UFormField label="Nowe hasło" name="password">
+        <UFormField :label="$t('auth.newPasswordLabel')" name="password">
           <UInput v-model="state.password" type="password" placeholder="••••••••" icon="i-lucide-lock" class="w-full" />
         </UFormField>
-        <UFormField label="Powtórz hasło" name="password_confirmation">
+        <UFormField :label="$t('auth.confirmPasswordLabel')" name="password_confirmation">
           <UInput v-model="state.password_confirmation" type="password" placeholder="••••••••" icon="i-lucide-lock" class="w-full" />
         </UFormField>
-        <UButton type="submit" size="lg" :loading="loading" :disabled="!token" class="w-full justify-center">Zmień hasło</UButton>
+        <UButton type="submit" size="lg" :loading="loading" :disabled="!token" class="w-full justify-center">{{ $t('auth.changePassword') }}</UButton>
       </UForm>
     </template>
 
     <p class="mt-9 text-center text-sm" style="color: var(--muted)">
-      <ULink to="/login" class="auth-link auth-link--strong">Wróć do logowania</ULink>
+      <ULink to="/login" class="auth-link auth-link--strong">{{ $t('auth.backToLogin') }}</ULink>
     </p>
   </div>
 </template>

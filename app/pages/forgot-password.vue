@@ -3,12 +3,14 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Reset hasła — Shoot SEO' })
+
+const { t } = useI18n()
+useHead({ title: t('auth.forgotPageTitle') })
 
 const { forgotPassword } = useAuth()
 
 const schema = z.object({
-  email: z.string().email('Nieprawidłowy adres e-mail'),
+  email: z.string().email(t('auth.invalidEmail')),
 })
 type Schema = z.output<typeof schema>
 
@@ -36,9 +38,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <div>
     <div class="mb-8">
-      <p class="eyebrow mb-3">Reset hasła</p>
-      <h1 class="card-title">Nie pamiętasz hasła?</h1>
-      <p class="mt-2 text-[15px]" style="color: var(--muted)">Wyślemy Ci link do zresetowania hasła.</p>
+      <p class="eyebrow mb-3">{{ $t('auth.forgotEyebrow') }}</p>
+      <h1 class="card-title">{{ $t('auth.forgotPasswordLink') }}</h1>
+      <p class="mt-2 text-[15px]" style="color: var(--muted)">{{ $t('auth.forgotSubtitle') }}</p>
     </div>
 
     <UAlert
@@ -46,8 +48,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       color="success"
       variant="subtle"
       icon="i-lucide-mail-check"
-      title="Sprawdź skrzynkę"
-      description="Jeśli konto istnieje, wysłaliśmy wiadomość z linkiem do resetu hasła."
+      :title="$t('auth.checkInboxTitle')"
+      :description="$t('auth.checkInboxDescription')"
     />
 
     <template v-else>
@@ -61,15 +63,15 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       />
 
       <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormField label="E-mail" name="email">
-          <UInput v-model="state.email" type="email" placeholder="ty@firma.pl" icon="i-lucide-mail" class="w-full" />
+        <UFormField :label="$t('auth.emailLabel')" name="email">
+          <UInput v-model="state.email" type="email" :placeholder="$t('auth.emailPlaceholder')" icon="i-lucide-mail" class="w-full" />
         </UFormField>
-        <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">Wyślij link resetujący</UButton>
+        <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">{{ $t('auth.sendResetLink') }}</UButton>
       </UForm>
     </template>
 
     <p class="mt-9 text-center text-sm" style="color: var(--muted)">
-      <ULink to="/login" class="auth-link auth-link--strong">Wróć do logowania</ULink>
+      <ULink to="/login" class="auth-link auth-link--strong">{{ $t('auth.backToLogin') }}</ULink>
     </p>
   </div>
 </template>

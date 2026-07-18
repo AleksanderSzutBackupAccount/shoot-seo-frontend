@@ -3,14 +3,16 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({ layout: 'auth' })
-useHead({ title: 'Logowanie — Shoot SEO' })
+
+const { t } = useI18n()
+useHead({ title: t('auth.loginPageTitle') })
 
 const { login } = useAuth()
 const route = useRoute()
 
 const schema = z.object({
-  email: z.string().email('Nieprawidłowy adres e-mail'),
-  password: z.string().min(1, 'Hasło jest wymagane'),
+  email: z.string().email(t('auth.invalidEmail')),
+  password: z.string().min(1, t('auth.passwordRequiredLogin')),
 })
 type Schema = z.output<typeof schema>
 
@@ -41,9 +43,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <div>
     <div class="mb-8">
-      <p class="eyebrow mb-3">Logowanie</p>
-      <h1 class="card-title">Zaloguj się</h1>
-      <p class="mt-2 text-[15px]" style="color: var(--muted)">Wejdź do panelu Shoot SEO</p>
+      <p class="eyebrow mb-3">{{ $t('auth.loginEyebrow') }}</p>
+      <h1 class="card-title">{{ $t('auth.loginTitle') }}</h1>
+      <p class="mt-2 text-[15px]" style="color: var(--muted)">{{ $t('auth.loginSubtitle') }}</p>
     </div>
 
     <UAlert
@@ -56,24 +58,24 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     />
 
     <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UFormField label="E-mail" name="email">
-        <UInput v-model="state.email" type="email" placeholder="ty@firma.pl" icon="i-lucide-mail" class="w-full" />
+      <UFormField :label="$t('auth.emailLabel')" name="email">
+        <UInput v-model="state.email" type="email" :placeholder="$t('auth.emailPlaceholder')" icon="i-lucide-mail" class="w-full" />
       </UFormField>
 
-      <UFormField label="Hasło" name="password">
+      <UFormField :label="$t('auth.passwordLabel')" name="password">
         <UInput v-model="state.password" type="password" placeholder="••••••••" icon="i-lucide-lock" class="w-full" />
       </UFormField>
 
       <div class="flex justify-end">
-        <ULink to="/forgot-password" class="auth-link text-sm">Nie pamiętasz hasła?</ULink>
+        <ULink to="/forgot-password" class="auth-link text-sm">{{ $t('auth.forgotPasswordLink') }}</ULink>
       </div>
 
-      <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">Zaloguj się</UButton>
+      <UButton type="submit" size="lg" :loading="loading" class="w-full justify-center">{{ $t('auth.loginTitle') }}</UButton>
     </UForm>
 
     <p class="mt-9 text-center text-sm" style="color: var(--muted)">
-      Nie masz konta?
-      <ULink to="/register" class="auth-link auth-link--strong">Zarejestruj się</ULink>
+      {{ $t('auth.noAccountPrompt') }}
+      <ULink to="/register" class="auth-link auth-link--strong">{{ $t('auth.registerCta') }}</ULink>
     </p>
   </div>
 </template>

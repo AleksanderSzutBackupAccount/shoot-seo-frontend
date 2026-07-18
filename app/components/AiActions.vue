@@ -9,6 +9,7 @@ const emit = defineEmits<{ insert: [text: string], replace: [text: string], anal
 
 const { generate, improve, analyze } = useAi()
 const toast = useToast()
+const { t } = useI18n()
 
 type AiAction = 'generate' | 'improve' | 'analyze'
 // Track which action is running so only its button spins (and no two run at once).
@@ -21,7 +22,7 @@ async function run<T>(action: AiAction, fn: () => Promise<T>, onOk: (r: T) => vo
   }
   catch (e: unknown) {
     const status = (e as { statusCode?: number }).statusCode
-    toast.add({ title: status === 429 ? 'Wyczerpano limit AI dla tego okresu.' : 'Akcja AI nie powiodła się.', color: 'error' })
+    toast.add({ title: status === 429 ? t('editor.aiRateLimitError') : t('editor.aiActionFailed'), color: 'error' })
   }
   finally {
     busy.value = null
@@ -34,14 +35,14 @@ const anyBusy = computed(() => busy.value !== null)
 
 <template>
   <div class="flex flex-wrap items-center gap-2">
-    <UInput v-model="topic" placeholder="Temat draftu…" size="sm" class="w-48" />
+    <UInput v-model="topic" :placeholder="$t('editor.aiTopicPlaceholder')" size="sm" class="w-48" />
     <UButton
       size="sm"
       :loading="busy === 'generate'"
       :disabled="anyBusy || !topic.trim()"
       @click="run('generate', () => generate({ variant: 'draft', topic }), r => emit('insert', r.text))"
     >
-      Generuj draft
+      {{ $t('editor.aiGenerateDraft') }}
     </UButton>
     <UButton
       size="sm"
@@ -50,7 +51,7 @@ const anyBusy = computed(() => busy.value !== null)
       :disabled="anyBusy || !props.content"
       @click="run('improve', () => improve({ fragment: props.content, instruction: 'zwięźlej' }), r => emit('replace', r.text))"
     >
-      Popraw
+      {{ $t('editor.aiImprove') }}
     </UButton>
     <UButton
       size="sm"
@@ -59,7 +60,7 @@ const anyBusy = computed(() => busy.value !== null)
       :disabled="anyBusy || !props.content"
       @click="run('analyze', () => analyze({ content: props.content }), r => emit('analysis', r))"
     >
-      Analiza
+      {{ $t('editor.aiAnalyze') }}
     </UButton>
   </div>
 </template>

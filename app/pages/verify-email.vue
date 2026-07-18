@@ -1,5 +1,6 @@
 <script setup lang="ts">
-useHead({ title: 'Weryfikacja e-mail — Shoot SEO' })
+const { t } = useI18n()
+useHead({ title: t('auth.verifyPageTitle') })
 
 const { user, isEmailVerified, verifyEmail, resendVerification } = useAuth()
 const route = useRoute()
@@ -19,7 +20,7 @@ onMounted(async () => {
   try {
     await verifyEmail(id, hash)
     status.value = 'verified'
-    toast.add({ title: 'E-mail zweryfikowany', color: 'success' })
+    toast.add({ title: t('auth.emailVerifiedTitle'), color: 'success' })
   }
   catch (err) {
     status.value = 'error'
@@ -32,8 +33,8 @@ async function resend() {
   try {
     await resendVerification()
     toast.add({
-      title: 'Wysłano ponownie',
-      description: 'Sprawdź swoją skrzynkę pocztową.',
+      title: t('auth.resentTitle'),
+      description: t('auth.resentDescription'),
       color: 'success',
     })
   }
@@ -56,18 +57,18 @@ async function resend() {
             <UIcon name="i-lucide-badge-check" class="size-6" style="color: var(--ink)" />
           </span>
           <div>
-            <p class="eyebrow mb-3">Weryfikacja e-mail</p>
-            <h1 class="card-title">E-mail zweryfikowany</h1>
-            <p class="mt-2 text-[15px]" style="color: var(--muted)">Twój adres e-mail został potwierdzony.</p>
+            <p class="eyebrow mb-3">{{ $t('auth.verifyEyebrow') }}</p>
+            <h1 class="card-title">{{ $t('auth.emailVerifiedTitle') }}</h1>
+            <p class="mt-2 text-[15px]" style="color: var(--muted)">{{ $t('auth.emailVerifiedDescription') }}</p>
           </div>
-          <UButton to="/dashboard" size="lg">Przejdź do panelu</UButton>
+          <UButton to="/dashboard" size="lg">{{ $t('auth.goToDashboard') }}</UButton>
         </div>
 
         <div v-else-if="status === 'verifying'" class="flex flex-col items-center gap-5">
           <span class="surface-strong flex size-14 items-center justify-center rounded-full">
             <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" style="color: var(--ink)" />
           </span>
-          <h1 class="card-title">Weryfikujemy Twój e-mail…</h1>
+          <h1 class="card-title">{{ $t('auth.verifyingTitle') }}</h1>
         </div>
 
         <div v-else class="flex w-full flex-col items-center gap-5">
@@ -75,12 +76,12 @@ async function resend() {
             <UIcon name="i-lucide-mail" class="size-6" style="color: var(--ink)" />
           </span>
           <div>
-            <p class="eyebrow mb-3">Weryfikacja e-mail</p>
-            <h1 class="card-title">Potwierdź swój adres e-mail</h1>
+            <p class="eyebrow mb-3">{{ $t('auth.verifyEyebrow') }}</p>
+            <h1 class="card-title">{{ $t('auth.confirmEmailTitle') }}</h1>
             <p class="mt-2 text-[15px]" style="color: var(--muted)">
-              Wysłaliśmy wiadomość na adres
+              {{ $t('auth.sentMessagePrefix') }}
               <span style="color: var(--ink); font-weight: 500">{{ user?.email }}</span>.
-              Kliknij link w wiadomości, aby aktywować konto.
+              {{ $t('auth.sentMessageSuffix') }}
             </p>
           </div>
 
@@ -89,15 +90,15 @@ async function resend() {
             color="error"
             variant="subtle"
             icon="i-lucide-triangle-alert"
-            :title="errorMessage ?? 'Nie udało się zweryfikować linku.'"
+            :title="errorMessage ?? $t('auth.verifyLinkFailed')"
             class="w-full text-left"
           />
 
           <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
             <UButton :loading="resending" variant="outline" icon="i-lucide-send" @click="resend">
-              Wyślij link ponownie
+              {{ $t('auth.resendLink') }}
             </UButton>
-            <UButton to="/dashboard" variant="ghost">Pomiń na razie</UButton>
+            <UButton to="/dashboard" variant="ghost">{{ $t('auth.skipForNow') }}</UButton>
           </div>
         </div>
       </div>

@@ -2,7 +2,8 @@
 import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import type { Channel, PostStatus, PostSummary, Publication } from '~~/shared/types/api'
 
-useHead({ title: 'Treści — Shoot SEO' })
+const { t, locale } = useI18n()
+useHead({ title: t('posts.pageTitle') })
 
 const { current } = useWorkspace()
 const { list, publish, unpublish, remove } = usePosts()
@@ -61,20 +62,20 @@ function channelLabel(channelId: string): string {
   return SOCIAL_CHANNEL_META[channel.type]?.label ?? channel.name
 }
 
-const statusMeta: Record<PostStatus, { label: string, cls: string }> = {
-  draft: { label: 'Szkic', cls: 'chip--draft' },
-  scheduled: { label: 'Zaplanowany', cls: 'chip--scheduled' },
-  published: { label: 'Opublikowany', cls: 'chip--published' },
-}
+const statusMeta = computed<Record<PostStatus, { label: string, cls: string }>>(() => ({
+  draft: { label: t('common.statusDraft'), cls: 'chip--draft' },
+  scheduled: { label: t('common.statusScheduled'), cls: 'chip--scheduled' },
+  published: { label: t('common.statusPublished'), cls: 'chip--published' },
+}))
 
-const columns: TableColumn<PostSummary>[] = [
-  { accessorKey: 'title', header: 'Tytuł' },
-  { accessorKey: 'status', header: 'Status' },
-  { id: 'date', header: 'Data' },
-  { accessorKey: 'updated_at', header: 'Aktualizacja' },
-  { id: 'channels', header: 'Kanały' },
+const columns = computed<TableColumn<PostSummary>[]>(() => [
+  { accessorKey: 'title', header: t('posts.colTitle') },
+  { accessorKey: 'status', header: t('posts.colStatus') },
+  { id: 'date', header: t('posts.colDate') },
+  { accessorKey: 'updated_at', header: t('posts.colUpdated') },
+  { id: 'channels', header: t('posts.colChannels') },
   { id: 'actions', header: '' },
-]
+])
 
 const busyId = ref<string | null>(null)
 const removeTarget = ref<PostSummary | null>(null)
@@ -82,12 +83,12 @@ const removing = ref(false)
 
 function formatDate(value: string | null): string {
   if (!value) return '—'
-  return new Date(value).toLocaleString('pl-PL', { dateStyle: 'medium', timeStyle: 'short' })
+  return new Date(value).toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' })
 }
 
 function rowDate(post: PostSummary): string {
-  if (post.status === 'published') return `Publikacja: ${formatDate(post.published_at)}`
-  if (post.status === 'scheduled') return `Plan: ${formatDate(post.scheduled_at)}`
+  if (post.status === 'published') return t('posts.publicationDate', { date: formatDate(post.published_at) })
+  if (post.status === 'scheduled') return t('posts.scheduledDate', { date: formatDate(post.scheduled_at) })
   return '—'
 }
 
@@ -96,11 +97,11 @@ async function togglePublish(post: PostSummary) {
   try {
     if (post.status === 'published') {
       await unpublish(post.id)
-      toast.add({ title: 'Cofnięto publikację', color: 'success' })
+      toast.add({ title: t('posts.unpublishedToast'), color: 'success' })
     }
     else {
       await publish(post.id)
-      toast.add({ title: 'Opublikowano wpis', color: 'success' })
+      toast.add({ title: t('posts.publishedToast'), color: 'success' })
     }
     await refresh()
   }
@@ -114,12 +115,12 @@ async function togglePublish(post: PostSummary) {
 
 function rowMenu(post: PostSummary): DropdownMenuItem[][] {
   return [[
-    { label: 'Edytuj', icon: 'i-lucide-pencil', to: `/posts/${post.id}` },
+    { label: t('common.edit'), icon: 'i-lucide-pencil', to: `/posts/${post.id}` },
     post.status === 'published'
-      ? { label: 'Cofnij publikację', icon: 'i-lucide-undo-2', onSelect: () => togglePublish(post) }
-      : { label: 'Opublikuj', icon: 'i-lucide-send', onSelect: () => togglePublish(post) },
+      ? { label: t('posts.unpublishAction'), icon: 'i-lucide-undo-2', onSelect: () => togglePublish(post) }
+      : { label: t('posts.publishAction'), icon: 'i-lucide-send', onSelect: () => togglePublish(post) },
   ], [
-    { label: 'Usuń', icon: 'i-lucide-trash-2', color: 'error', onSelect: () => { removeTarget.value = post } },
+    { label: t('common.delete'), icon: 'i-lucide-trash-2', color: 'error', onSelect: () => { removeTarget.value = post } },
   ]]
 }
 
@@ -128,7 +129,7 @@ async function confirmRemove() {
   removing.value = true
   try {
     await remove(removeTarget.value.id)
-    toast.add({ title: 'Usunięto wpis', color: 'success' })
+    toast.add({ title: t('posts.deletedToast'), color: 'success' })
     removeTarget.value = null
     await refresh()
   }
@@ -144,23 +145,23 @@ async function confirmRemove() {
 <template>
   <div>
     <AppPageHeader
-      eyebrow="Treści"
-      title="Wszystkie wpisy"
-      :description="`Twórz, planuj i publikuj treści w workspace „${current?.name ?? '—'}”.`"
+      :eyebrow="$t('posts.eyebrow')"
+      :title="$t('posts.listTitle')"
+      :description="$t('posts.listDescription', { workspace: current?.name ?? '—' })"
     >
       <template #actions>
-        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">Nowy wpis</UButton>
+        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus" size="lg">{{ $t('common.newPost') }}</UButton>
       </template>
     </AppPageHeader>
 
     <AppEmptyState
       v-if="loadStatus !== 'pending' && (posts?.length ?? 0) === 0"
       icon="i-lucide-file-text"
-      title="Jeszcze pusto"
-      description="Nie masz jeszcze żadnych wpisów. Zacznij od pierwszego — z asystą AI napiszesz go w kilka minut."
+      :title="$t('common.emptyTitle')"
+      :description="$t('posts.emptyDescription')"
     >
       <template #action>
-        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus">Utwórz wpis</UButton>
+        <UButton to="/posts/new" color="neutral" icon="i-lucide-plus">{{ $t('common.createPost') }}</UButton>
       </template>
     </AppEmptyState>
 
@@ -238,7 +239,7 @@ async function confirmRemove() {
                 variant="ghost"
                 size="sm"
                 :loading="busyId === row.original.id"
-                aria-label="Akcje"
+                :aria-label="$t('posts.actionsAriaLabel')"
               />
             </UDropdownMenu>
           </div>
@@ -248,14 +249,14 @@ async function confirmRemove() {
 
     <UModal
       :open="removeTarget !== null"
-      title="Usunąć wpis?"
-      :description="`Czy na pewno chcesz usunąć „${removeTarget?.title}”? Tej operacji nie można cofnąć.`"
+      :title="$t('posts.deleteModalTitle')"
+      :description="$t('posts.deleteModalDescription', { title: removeTarget?.title ?? '' })"
       @update:open="(value: boolean) => { if (!value) removeTarget = null }"
     >
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton color="neutral" variant="ghost" @click="removeTarget = null">Anuluj</UButton>
-          <UButton color="error" :loading="removing" @click="confirmRemove">Usuń</UButton>
+          <UButton color="neutral" variant="ghost" @click="removeTarget = null">{{ $t('common.cancel') }}</UButton>
+          <UButton color="error" :loading="removing" @click="confirmRemove">{{ $t('common.delete') }}</UButton>
         </div>
       </template>
     </UModal>

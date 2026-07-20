@@ -403,6 +403,10 @@ export interface CurrentPlan {
   status: string
   current_period_end: string | null
   entitlements: PlanEntitlements
+  is_trialing: boolean
+  trial_ends_at: string | null
+  trial_days_left: number | null
+  is_trial_eligible: boolean
 }
 
 export interface PlansResponse {

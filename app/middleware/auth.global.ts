@@ -34,6 +34,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return isAuthed ? navigateTo('/dashboard') : undefined
   }
 
+  // Public docs — reachable by everyone, no redirect.
+  if (to.path === '/docs') {
+    return
+  }
+
   // Everything else requires authentication.
   if (!isAuthed) {
     const redirect = to.fullPath !== '/' ? `?redirect=${encodeURIComponent(to.fullPath)}` : ''

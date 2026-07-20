@@ -17,7 +17,7 @@ const features = [
     <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       <article v-for="f in features" :key="f.icon" class="u-card u-card--hover p-6">
         <div class="flex size-11 items-center justify-center rounded-xl" style="background: var(--surface-strong)">
-          <UIcon :name="f.icon" class="size-5" style="color: var(--ink)" />
+          <UIcon :name="f.icon" class="size-5" style="color: var(--ink)" aria-hidden="true" />
         </div>
         <h3 class="card-title mt-5" style="font-size: 1.125rem">{{ $t(f.title) }}</h3>
         <p class="mt-2 text-sm" style="color: var(--body)">{{ $t(f.body) }}</p>

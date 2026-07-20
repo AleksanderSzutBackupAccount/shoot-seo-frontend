@@ -90,7 +90,7 @@ const webhookCode = `import { verifyWebhookSignature, type WebhookEvent } from "
 // rawBody is the exact bytes/string you received, BEFORE JSON.parse.
 const ok = await verifyWebhookSignature({
   payload: rawBody,
-  signature: req.headers["x-shutseo-signature"],
+  signature: String(req.headers["x-shutseo-signature"] ?? ""),
   secret: process.env.SHOOT_SEO_WEBHOOK_SECRET!,
 });
 
@@ -125,7 +125,10 @@ export default defineEventHandler(async (event) => {
 
 const nextCode = `// app/blog/page.tsx (Server Component)
 import { createClient } from "@shoot-seo/sdk";
-const shut = createClient({ apiKey: process.env.SHOOT_SEO_API_KEY! });
+const shut = createClient({
+  apiKey: process.env.SHOOT_SEO_API_KEY!,
+  baseUrl: process.env.SHOOT_SEO_BASE_URL!,
+});
 
 export default async function BlogIndex() {
   const { data } = await shut.posts.list({ perPage: 20 });
@@ -184,6 +187,16 @@ try {
         <UColorModeButton />
       </div>
     </header>
+
+    <!-- Mobile section nav — the sticky desktop TOC is hidden below lg. -->
+    <details class="doc-toc mx-auto mt-6 max-w-6xl px-5 sm:px-8 lg:hidden">
+      <summary>On this page</summary>
+      <ul>
+        <li v-for="s in sections" :key="s.id">
+          <a :href="`#${s.id}`">{{ s.label }}</a>
+        </li>
+      </ul>
+    </details>
 
     <div class="mx-auto flex max-w-6xl gap-10 px-5 py-10 sm:px-8">
       <aside class="hidden w-56 shrink-0 lg:block">
@@ -307,5 +320,33 @@ try {
 .doc-section :deep(.code-block code) {
   background: none;
   padding: 0;
+}
+
+/* Mobile-only collapsible table of contents. */
+.doc-toc summary {
+  cursor: pointer;
+  list-style: none;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.doc-toc summary::-webkit-details-marker {
+  display: none;
+}
+.doc-toc ul {
+  margin-top: 0.375rem;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 0.4rem;
+}
+.doc-toc a {
+  display: block;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.875rem;
+  color: var(--muted);
 }
 </style>

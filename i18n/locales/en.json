@@ -1,4 +1,48 @@
 {
+  "landing": {
+    "nav": { "docs": "Docs", "login": "Log in", "startFree": "Start free" },
+    "hero": {
+      "eyebrow": "Content · SEO · AI",
+      "headline": "Aim. Publish. Rank.",
+      "subline": "Create, plan, and publish SEO content in one place — with AI assistance, built-in analytics, and integrations. Multi-tenant, for your whole team.",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "See how it works"
+    },
+    "features": {
+      "eyebrow": "Everything in one place",
+      "title": "From idea to ranking",
+      "aiTitle": "AI content",
+      "aiBody": "Write faster with AI assistance — from brief to a polished, optimized article.",
+      "schedulerTitle": "Publishing scheduler",
+      "schedulerBody": "Plan your calendar and publish automatically across channels.",
+      "analyticsTitle": "Analytics",
+      "analyticsBody": "Track views and engagement with a lightweight, cookieless beacon.",
+      "apiTitle": "Headless API",
+      "apiBody": "Pull published content through the Public API v1 and SDK — into any frontend."
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Three steps to the top",
+      "step1Title": "Plan & write with AI",
+      "step1Body": "Gather topics, map the calendar, and create content with AI assistance.",
+      "step2Title": "Publish & distribute",
+      "step2Body": "Ship to your site and channels in one click — or through the API.",
+      "step3Title": "Measure & grow",
+      "step3Body": "Watch performance, refine, and climb the search results."
+    },
+    "cta": {
+      "title": "Ready to hit the top of search?",
+      "body": "Create your account and publish your first piece today.",
+      "button": "Start free"
+    },
+    "footer": {
+      "tagline": "Content, SEO, and AI in one place.",
+      "docs": "Docs",
+      "login": "Log in",
+      "register": "Sign up",
+      "rights": "All rights reserved."
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "groupContent": "Content",

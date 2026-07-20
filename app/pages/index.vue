@@ -1,11 +1,14 @@
 <script setup lang="ts">
-// The global auth middleware handles login/onboarding redirects; authenticated
-// users with a workspace land here and are forwarded to the dashboard.
+// Public marketing landing. The auth guard sends authenticated users to
+// /dashboard, so anything rendered here is for guests.
 definePageMeta({ layout: false })
-
-await navigateTo('/dashboard', { replace: true })
 </script>
 
 <template>
-  <div />
+  <div style="background: var(--canvas)">
+    <MarketingNav />
+    <main>
+      <MarketingHero />
+    </main>
+  </div>
 </template>

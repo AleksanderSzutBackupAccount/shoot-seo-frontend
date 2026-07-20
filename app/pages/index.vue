@@ -9,6 +9,8 @@ definePageMeta({ layout: false })
     <MarketingNav />
     <main>
       <MarketingHero />
+      <MarketingFeatures />
+      <MarketingHowItWorks />
     </main>
   </div>
 </template>

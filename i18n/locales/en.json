@@ -459,7 +459,12 @@
       "autonomousLabel": "Autonomous: {value}",
       "choosePlan": "Choose {name}",
       "currentPlan": "Current plan",
-      "aiUsageLabel": "AI: {used} / {limit} tokens"
+      "aiUsageLabel": "AI: {used} / {limit} tokens",
+      "portalFailed": "Couldn't open the billing portal.",
+      "startTrial": "Start 14-day {name} trial",
+      "trialReassurance": "Card required · cancel anytime · we'll remind you before charging",
+      "trialStatus": "Pro trial — {days} days left (until {date})",
+      "checkoutSuccess": "Payment received — your plan is updated."
     }
   },
   "workspaces": {
@@ -499,5 +504,12 @@
     "secretRevealBody": "This value is visible only once, right after creation. Store it securely.",
     "invalidUrl": "Enter a valid URL (https://…)",
     "urlLabel": "URL"
+  },
+  "trial": {
+    "pill": "Pro trial · {days} days",
+    "bannerTitle": "Your Pro trial ends in {days} days",
+    "bannerBody": "After that your card will be charged. Keep autonomous content, images and multi-language.",
+    "bannerManage": "Manage",
+    "bannerDismissAria": "Dismiss banner"
   }
 }

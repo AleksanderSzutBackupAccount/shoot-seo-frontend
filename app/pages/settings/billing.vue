@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import type { CurrentPlan, Plan } from '~~/shared/types/api'
+import type { Plan } from '~~/shared/types/api'
 
 const { t, locale } = useI18n()
 useHead({ title: () => t('settings.billing.pageTitle') })
 
 const { current: currentWorkspace } = useWorkspace()
-const { fetchPlans, fetchCurrent, checkout, portal } = useBilling()
+const { fetchPlans, checkout, portal } = useBilling()
+const { current, isTrialing, trialDaysLeft, isTrialEligible, trialEndsAt, refresh } = usePlan()
 const toast = useToast()
 
-const { data: current, status } = await useAsyncData(
-  'billing-current',
-  () => fetchCurrent(),
-  { watch: [() => currentWorkspace.value?.id], default: () => null as CurrentPlan | null },
-)
 const { data: plans, status: plansStatus } = await useAsyncData(
   'billing-plans',
   () => fetchPlans(),
   { watch: [() => currentWorkspace.value?.id], default: () => [] as Plan[] },
 )
 
-const loading = computed(() => status.value === 'pending' || plansStatus.value === 'pending')
+const currentStatus = ref<'idle' | 'pending'>('pending')
+await useAsyncData('billing-current', async () => {
+  currentStatus.value = 'pending'
+  await refresh()
+  currentStatus.value = 'idle'
+  return current.value
+}, { watch: [() => currentWorkspace.value?.id] })
+
+const loading = computed(() => currentStatus.value === 'pending' || plansStatus.value === 'pending')
 
 /** Tracks which button triggered a redirect: a plan code, `'manage'`, or `null`. */
 const busy = ref<string | null>(null)
@@ -74,6 +78,15 @@ async function manage() {
     busy.value = null
   }
 }
+
+// Returning from Stripe Checkout: confirm and re-pull the (possibly trialing) plan.
+const route = useRoute()
+onMounted(async () => {
+  if (route.query.checkout === 'success') {
+    await refresh()
+    toast.add({ title: t('settings.billing.checkoutSuccess'), color: 'success' })
+  }
+})
 </script>
 
 <template>
@@ -102,6 +115,9 @@ async function manage() {
               </span>
               <span v-if="current.current_period_end"> · {{ $t('settings.billing.renewsOn', { date: formatDate(current.current_period_end) }) }}</span>
             </p>
+            <p v-if="isTrialing" class="mt-1 text-sm" style="color: var(--muted)">
+              {{ $t('settings.billing.trialStatus', { days: trialDaysLeft ?? 0, date: trialEndsAt ? formatDate(trialEndsAt) : '—' }) }}
+            </p>
           </div>
           <UButton
             v-if="current && current.code !== 'free'"
@@ -127,13 +143,17 @@ async function manage() {
             <li>{{ $t('settings.billing.autonomousLabel', { value: plan.entitlements['autonomous.enabled'] ? $t('common.yes') : $t('common.no') }) }}</li>
           </ul>
 
-          <UButton
-            v-if="plan.purchasable && current?.code !== plan.code"
-            class="mt-4" color="neutral" :loading="busy === plan.code" :disabled="busy !== null"
-            @click="upgrade(plan.code)"
-          >
-            {{ $t('settings.billing.choosePlan', { name: plan.name }) }}
-          </UButton>
+          <template v-if="plan.purchasable && current?.code !== plan.code">
+            <UButton
+              class="mt-4" color="neutral" :loading="busy === plan.code" :disabled="busy !== null"
+              @click="upgrade(plan.code)"
+            >
+              {{ isTrialEligible ? $t('settings.billing.startTrial', { name: plan.name }) : $t('settings.billing.choosePlan', { name: plan.name }) }}
+            </UButton>
+            <p v-if="isTrialEligible" class="mt-2 text-xs" style="color: var(--muted)">
+              {{ $t('settings.billing.trialReassurance') }}
+            </p>
+          </template>
           <p v-else-if="current?.code === plan.code" class="mt-4 text-sm" style="color: var(--muted)">
             {{ $t('settings.billing.currentPlan') }}
           </p>

@@ -5,6 +5,13 @@ const { user, logout, isEmailVerified } = useAuth()
 const mobileNav = ref(false)
 const { t } = useI18n()
 
+const { current, refresh } = usePlan()
+// Load current plan once for the trial pill/banner (shared useState).
+await useAsyncData('layout-current-plan', async () => {
+  if (user.value && !current.value) await refresh()
+  return current.value
+})
+
 const userMenu = computed<DropdownMenuItem[][]>(() => [
   [{ label: user.value?.name ?? t('shell.account'), type: 'label' }],
   [{ label: t('shell.verifyEmail'), icon: 'i-lucide-mail-check', to: '/verify-email' }],
@@ -53,6 +60,7 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
         </div>
 
         <div class="flex items-center gap-1.5">
+          <AppTrialPill />
           <AppLanguageSwitcher />
           <UColorModeButton />
           <UDropdownMenu :items="userMenu" :ui="{ content: 'w-56' }">
@@ -77,6 +85,8 @@ const userMenu = computed<DropdownMenuItem[][]>(() => [
           <UButton to="/verify-email" size="xs" color="neutral" class="shrink-0">{{ $t('shell.verifyCta') }}</UButton>
         </div>
       </div>
+
+      <AppTrialEndingBanner />
 
       <main class="flex-1">
         <div class="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-10">

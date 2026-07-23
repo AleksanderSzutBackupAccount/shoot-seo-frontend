@@ -459,7 +459,8 @@
       "autonomousLabel": "Autonomous: {value}",
       "choosePlan": "Wybierz {name}",
       "currentPlan": "Aktualny plan",
-      "aiUsageLabel": "AI: {used} / {limit} tok"
+      "aiUsageLabel": "AI: {used} / {limit} tok",
+      "portalFailed": "Nie udało się otworzyć panelu rozliczeń."
     }
   },
   "workspaces": {
@@ -499,5 +500,12 @@
     "secretRevealBody": "Ta wartość jest widoczna tylko raz, zaraz po utworzeniu. Przechowuj ją bezpiecznie.",
     "invalidUrl": "Podaj poprawny adres URL (https://…)",
     "urlLabel": "Adres URL"
+  },
+  "trial": {
+    "pill": "Pro trial · {days} dni",
+    "bannerTitle": "Trial Pro kończy się za {days} dni",
+    "bannerBody": "Po tym terminie obciążymy Twoją kartę. Zachowaj autonomiczne treści, obrazy i wielojęzyczność.",
+    "bannerManage": "Zarządzaj",
+    "bannerDismissAria": "Zamknij baner"
   }
 }

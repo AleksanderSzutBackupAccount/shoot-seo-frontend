@@ -460,7 +460,11 @@
       "choosePlan": "Wybierz {name}",
       "currentPlan": "Aktualny plan",
       "aiUsageLabel": "AI: {used} / {limit} tok",
-      "portalFailed": "Nie udało się otworzyć panelu rozliczeń."
+      "portalFailed": "Nie udało się otworzyć panelu rozliczeń.",
+      "startTrial": "Zacznij 14-dniowy trial Pro",
+      "trialReassurance": "Karta wymagana · anuluj kiedy chcesz · przypomnimy przed obciążeniem",
+      "trialStatus": "Trial Pro — zostało {days} dni (do {date})",
+      "checkoutSuccess": "Płatność przyjęta — plan zaktualizowany."
     }
   },
   "workspaces": {

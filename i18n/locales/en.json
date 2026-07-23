@@ -460,7 +460,11 @@
       "choosePlan": "Choose {name}",
       "currentPlan": "Current plan",
       "aiUsageLabel": "AI: {used} / {limit} tokens",
-      "portalFailed": "Couldn't open the billing portal."
+      "portalFailed": "Couldn't open the billing portal.",
+      "startTrial": "Start 14-day Pro trial",
+      "trialReassurance": "Card required · cancel anytime · we'll remind you before charging",
+      "trialStatus": "Pro trial — {days} days left (until {date})",
+      "checkoutSuccess": "Payment received — your plan is updated."
     }
   },
   "workspaces": {

@@ -1,4 +1,48 @@
 {
+  "landing": {
+    "nav": { "docs": "Dokumentacja", "login": "Zaloguj się", "startFree": "Zacznij za darmo" },
+    "hero": {
+      "eyebrow": "Treść · SEO · AI",
+      "headline": "Celuj. Publikuj. Rośnij.",
+      "subline": "Twórz, planuj i publikuj treści SEO w jednym miejscu — z asystą AI, wbudowaną analityką i integracjami. Wielotenantowo, dla całego zespołu.",
+      "ctaPrimary": "Zacznij za darmo",
+      "ctaSecondary": "Zobacz, jak to działa"
+    },
+    "features": {
+      "eyebrow": "Wszystko w jednym miejscu",
+      "title": "Od pomysłu do pozycji w Google",
+      "aiTitle": "Treści z AI",
+      "aiBody": "Pisz szybciej z asystą AI — od briefu po gotowy, zoptymalizowany artykuł.",
+      "schedulerTitle": "Planer publikacji",
+      "schedulerBody": "Zaplanuj kalendarz i publikuj automatycznie w wielu kanałach.",
+      "analyticsTitle": "Analityka",
+      "analyticsBody": "Śledź wyświetlenia i zaangażowanie dzięki lekkiemu, cookieless beaconowi.",
+      "apiTitle": "Headless API",
+      "apiBody": "Pobieraj opublikowane treści przez Public API v1 i SDK — do dowolnego frontu."
+    },
+    "how": {
+      "eyebrow": "Jak to działa",
+      "title": "Trzy kroki do TOP-u",
+      "step1Title": "Zaplanuj i napisz z AI",
+      "step1Body": "Zbierz tematy, rozpisz kalendarz i twórz treści z asystą AI.",
+      "step2Title": "Publikuj i dystrybuuj",
+      "step2Body": "Wypuść treść na stronę i w kanały jednym kliknięciem — lub przez API.",
+      "step3Title": "Mierz i rośnij",
+      "step3Body": "Obserwuj wyniki, poprawiaj i wspinaj się w wynikach wyszukiwania."
+    },
+    "cta": {
+      "title": "Gotów wstrzelić się w wyniki?",
+      "body": "Załóż konto i opublikuj pierwszą treść jeszcze dziś.",
+      "button": "Zacznij za darmo"
+    },
+    "footer": {
+      "tagline": "Treść, SEO i AI w jednym miejscu.",
+      "docs": "Dokumentacja",
+      "login": "Zaloguj się",
+      "register": "Rejestracja",
+      "rights": "Wszelkie prawa zastrzeżone."
+    }
+  },
   "nav": {
     "dashboard": "Pulpit",
     "groupContent": "Treść",

@@ -29,6 +29,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return isAuthed ? navigateTo('/dashboard') : undefined
   }
 
+  // Public marketing home: guests see the landing, authed users go to the app.
+  if (to.path === '/') {
+    return isAuthed ? navigateTo('/dashboard') : undefined
+  }
+
+  // Public docs — reachable by everyone, no redirect.
+  if (to.path === '/docs') {
+    return
+  }
+
   // Everything else requires authentication.
   if (!isAuthed) {
     const redirect = to.fullPath !== '/' ? `?redirect=${encodeURIComponent(to.fullPath)}` : ''

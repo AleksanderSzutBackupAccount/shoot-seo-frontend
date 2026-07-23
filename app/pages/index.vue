@@ -1,11 +1,28 @@
 <script setup lang="ts">
-// The global auth middleware handles login/onboarding redirects; authenticated
-// users with a workspace land here and are forwarded to the dashboard.
+// Public marketing landing. The auth guard sends authenticated users to
+// /dashboard, so anything rendered here is for guests.
 definePageMeta({ layout: false })
 
-await navigateTo('/dashboard', { replace: true })
+const { t } = useI18n()
+useSeoMeta({
+  title: () => `Shoot SEO — ${t('landing.hero.headline')}`,
+  description: () => t('landing.hero.subline'),
+  ogTitle: () => `Shoot SEO — ${t('landing.hero.headline')}`,
+  ogDescription: () => t('landing.hero.subline'),
+  ogType: 'website',
+  ogImage: '/logo.png',
+})
 </script>
 
 <template>
-  <div />
+  <div style="background: var(--canvas)">
+    <MarketingNav />
+    <main>
+      <MarketingHero />
+      <MarketingFeatures />
+      <MarketingHowItWorks />
+      <MarketingCtaBand />
+    </main>
+    <MarketingFooter />
+  </div>
 </template>

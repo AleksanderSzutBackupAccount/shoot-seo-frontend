@@ -6,11 +6,12 @@ const mobileNav = ref(false)
 const { t } = useI18n()
 
 const { current, refresh } = usePlan()
-// Load current plan once for the trial pill/banner (shared useState).
+const { current: currentWorkspace } = useWorkspace()
+// Load current plan for the trial pill/banner (shared useState); refetch on workspace switch.
 await useAsyncData('layout-current-plan', async () => {
-  if (user.value && !current.value) await refresh()
+  if (user.value) await refresh()
   return current.value
-})
+}, { watch: [() => currentWorkspace.value?.id] })
 
 const userMenu = computed<DropdownMenuItem[][]>(() => [
   [{ label: user.value?.name ?? t('shell.account'), type: 'label' }],

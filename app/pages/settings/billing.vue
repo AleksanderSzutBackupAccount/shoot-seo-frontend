@@ -148,9 +148,9 @@ onMounted(async () => {
               class="mt-4" color="neutral" :loading="busy === plan.code" :disabled="busy !== null"
               @click="upgrade(plan.code)"
             >
-              {{ plan.code === 'pro' && isTrialEligible ? $t('settings.billing.startTrial') : $t('settings.billing.choosePlan', { name: plan.name }) }}
+              {{ isTrialEligible ? $t('settings.billing.startTrial', { name: plan.name }) : $t('settings.billing.choosePlan', { name: plan.name }) }}
             </UButton>
-            <p v-if="plan.code === 'pro' && isTrialEligible" class="mt-2 text-xs" style="color: var(--muted)">
+            <p v-if="isTrialEligible" class="mt-2 text-xs" style="color: var(--muted)">
               {{ $t('settings.billing.trialReassurance') }}
             </p>
           </template>

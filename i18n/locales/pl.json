@@ -461,7 +461,7 @@
       "currentPlan": "Aktualny plan",
       "aiUsageLabel": "AI: {used} / {limit} tok",
       "portalFailed": "Nie udało się otworzyć panelu rozliczeń.",
-      "startTrial": "Zacznij 14-dniowy trial Pro",
+      "startTrial": "Zacznij 14-dniowy trial {name}",
       "trialReassurance": "Karta wymagana · anuluj kiedy chcesz · przypomnimy przed obciążeniem",
       "trialStatus": "Trial Pro — zostało {days} dni (do {date})",
       "checkoutSuccess": "Płatność przyjęta — plan zaktualizowany."
